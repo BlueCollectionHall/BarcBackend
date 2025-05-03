@@ -2,21 +2,25 @@ package com.miaoyu.barc.api.controller;
 
 import com.miaoyu.barc.annotation.ApiPath;
 import com.miaoyu.barc.annotation.IgnoreAuth;
+import com.miaoyu.barc.api.service.StudentService;
 import com.miaoyu.barc.response.ResourceR;
 import com.miaoyu.barc.utils.J;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @ApiPath
 public class StudentController {
+    @Autowired
+    private StudentService studentService;
 
     /**获取全部BA中的student实体
      * @return List类型中包含全部的student实体*/
     @IgnoreAuth
     @GetMapping("/students_all")
     public ResponseEntity<J> getAllStudentsControl() {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        return studentService.getAllStudentsService();
     }
 
     /**根据school_id获取符合条件的所有student实体
@@ -26,7 +30,7 @@ public class StudentController {
     @GetMapping("/students_by_school")
     public ResponseEntity<J> getStudentsBySchoolControl(
             @RequestParam("school_id") String schoolId) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        return studentService.getStudentsBySchoolService(schoolId);
     }
 
     /**根据club_id获取符合条件的所有student实体
@@ -36,7 +40,7 @@ public class StudentController {
     @GetMapping("/students_by_club")
     public ResponseEntity<J> getStudentsByClubControl(
             @RequestParam("club_id") String clubId) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        return studentService.getStudentsByClubIdService(clubId);
     }
 
     /**根据student_id获取唯一符合的student实体
@@ -46,7 +50,7 @@ public class StudentController {
     @GetMapping("/student_only")
     public ResponseEntity<J> getStudentByIdControl(
             @RequestParam("student_id") String studentId) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        return studentService.getStudentByIdService(studentId);
     }
 
     /**上传student参数

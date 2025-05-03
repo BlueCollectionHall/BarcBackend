@@ -2,20 +2,25 @@ package com.miaoyu.barc.api.controller;
 
 import com.miaoyu.barc.annotation.ApiPath;
 import com.miaoyu.barc.annotation.IgnoreAuth;
+import com.miaoyu.barc.api.service.SchoolService;
 import com.miaoyu.barc.response.ResourceR;
 import com.miaoyu.barc.utils.J;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @ApiPath
 public class SchoolController {
+    @Autowired
+    private SchoolService schoolService;
+
     /**获取所有school实体
      * @return List类型包含所有school实体*/
     @IgnoreAuth
     @GetMapping("/schools_all")
     public ResponseEntity<J> getAllSchoolsControl() {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        return schoolService.getAllSchoolsService();
     }
 
     /**
@@ -26,7 +31,7 @@ public class SchoolController {
     @GetMapping("/school_only")
     public ResponseEntity<J> getSchoolByIdControl(
             @RequestParam("school_id") String schoolId) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        return schoolService.getSchoolById(schoolId);
     }
 
     /**上传school参数
