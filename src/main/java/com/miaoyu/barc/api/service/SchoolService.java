@@ -16,7 +16,7 @@ public class SchoolService {
     private SchoolMapper schoolMapper;
 
     public ResponseEntity<J> getAllSchoolsService() {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, schoolMapper));
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, schoolMapper.selectAll()));
     }
 
     public ResponseEntity<J> getSchoolById(String schoolId) {
