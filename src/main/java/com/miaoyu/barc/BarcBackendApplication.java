@@ -5,7 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @MapperScan({
-        "com.miaoyu.barc.api.mapper"
+        "com.miaoyu.barc.api.mapper",
+        "com.miaoyu.barc.user.mapper"
 })
 @SpringBootApplication
 public class BarcBackendApplication {

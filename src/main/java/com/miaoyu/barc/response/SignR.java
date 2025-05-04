@@ -10,14 +10,14 @@ public class SignR {
         j.setData(j.getMsg());
         return j;
     }
-    public J SignIn(boolean isSignIn) {
+    public J signIn(boolean isSignIn) {
         J j = new J();
         j.setCode(isSignIn? 0: 1);
         j.setMsg("登录" + (isSignIn? "成功": "失败") + ": Sign in " + (isSignIn? "success" : "fail"));
         j.setData(j.getMsg());
         return j;
     }
-    public J SignUp(boolean isSignUp) {
+    public J signUp(boolean isSignUp) {
         J j = new J();
         j.setCode(isSignUp? 0: 1);
         j.setMsg("注册" + (isSignUp? "成功": "失败") + ": Sign up " + (isSignUp? "success" : "fail"));

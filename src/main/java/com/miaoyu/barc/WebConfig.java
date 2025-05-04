@@ -1,6 +1,7 @@
 package com.miaoyu.barc;
 
 import com.miaoyu.barc.interceptor.AuthInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -13,6 +14,8 @@ public class WebConfig {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
+            @Autowired
+            private AuthInterceptor authInterceptor;
             // 注册跨域
             @Override
             public void addCorsMappings(CorsRegistry registry) {
@@ -26,7 +29,7 @@ public class WebConfig {
             // 注册令牌拦截器
             @Override
             public void addInterceptors(InterceptorRegistry registry) {
-                registry.addInterceptor(new AuthInterceptor())
+                registry.addInterceptor(authInterceptor)
                         .addPathPatterns("/**");
             }
         };

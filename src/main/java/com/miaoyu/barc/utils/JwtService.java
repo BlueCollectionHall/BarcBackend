@@ -22,6 +22,7 @@ public class JwtService {
     public JwtService(JwtConfig jwtConfig) {
         this.jwtConfig = jwtConfig;
     }
+
     private String getKey() {
         return jwtConfig.getKey();
     }
@@ -43,6 +44,7 @@ public class JwtService {
                 .claims(claims)
                 .compact();
     }
+
     public J jwtParser(String token) {
         Claims payload;
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.getKey()));

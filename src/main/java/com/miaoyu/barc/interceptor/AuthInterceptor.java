@@ -1,15 +1,24 @@
 package com.miaoyu.barc.interceptor;
 
 import com.miaoyu.barc.annotation.IgnoreAuth;
+import com.miaoyu.barc.utils.J;
+import com.miaoyu.barc.utils.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 // 全局路径Authorization令牌实现拦截器
+@Component
 public class AuthInterceptor implements HandlerInterceptor {
+    @Autowired
+    private JwtService jwtService;
+
     @Override
     public boolean preHandle(
             HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -25,10 +34,20 @@ public class AuthInterceptor implements HandlerInterceptor {
                 handlerMethod.getBeanType().isAnnotationPresent(IgnoreAuth.class)) {
             return true;
         }
-        String token = request.getHeader("Authorization");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("text/plain;charset=UTF-8");
-        response.getWriter().write("账号未登录！Accept without Authorization!");
-        return false;
+        String token = request.getHeader("Authorization");
+        if (Objects.isNull(token)) {
+            response.getWriter().write("账号未登录！Accept without Authorization!");
+            return false;
+        }
+        J jwt = jwtService.jwtParser(token);
+        if (jwt.getCode() == 0) {
+            request.setAttribute("uuid", jwt.getData());
+            return true;
+        } else {
+            response.getWriter().write(jwt.getMsg());
+            return false;
+        }
     }
 }
