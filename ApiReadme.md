@@ -68,3 +68,6 @@ baseUrl: `/api`
 `GET:` `/works_by_student` `param:student_id`
 #### 获取唯一
 `GET:` `/work_only` `param:work_id`
+### 分类信息
+#### 全部获取
+`GET:` `/categories_all`
