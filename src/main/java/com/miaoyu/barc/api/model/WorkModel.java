@@ -1,32 +1,24 @@
 package com.miaoyu.barc.api.model;
 
+import java.time.LocalDateTime;
+
 public class WorkModel {
     private String id;
-    private String name;
+    private String title;
+    private String description;
     private String content;
-    private String author;
-    private String link;
-    private String first_classify;
-    private String student;
-    private String school;
+    private String banner_image;
     private String cover_image;
-    private long last_time;
-
-    public long getLast_time() {
-        return last_time;
-    }
-
-    public void setLast_time(long last_time) {
-        this.last_time = last_time;
-    }
-
-    public String getCover_image() {
-        return cover_image;
-    }
-
-    public void setCover_image(String cover_image) {
-        this.cover_image = cover_image;
-    }
+    private Integer view_count;
+    private Integer like_count;
+    private String author;
+    private String author_nickname;
+    private String source;
+    private Boolean is_claim;
+    private Integer status;
+    private String student;
+    private LocalDateTime create_at;
+    private LocalDateTime update_at;
 
     public String getId() {
         return id;
@@ -36,12 +28,20 @@ public class WorkModel {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getContent() {
@@ -52,6 +52,38 @@ public class WorkModel {
         this.content = content;
     }
 
+    public String getBanner_image() {
+        return banner_image;
+    }
+
+    public void setBanner_image(String banner_image) {
+        this.banner_image = banner_image;
+    }
+
+    public String getCover_image() {
+        return cover_image;
+    }
+
+    public void setCover_image(String cover_image) {
+        this.cover_image = cover_image;
+    }
+
+    public Integer getView_count() {
+        return view_count;
+    }
+
+    public void setView_count(Integer view_count) {
+        this.view_count = view_count;
+    }
+
+    public Integer getLike_count() {
+        return like_count;
+    }
+
+    public void setLike_count(Integer like_count) {
+        this.like_count = like_count;
+    }
+
     public String getAuthor() {
         return author;
     }
@@ -60,20 +92,36 @@ public class WorkModel {
         this.author = author;
     }
 
-    public String getLink() {
-        return link;
+    public String getAuthor_nickname() {
+        return author_nickname;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setAuthor_nickname(String author_nickname) {
+        this.author_nickname = author_nickname;
     }
 
-    public String getFirst_classify() {
-        return first_classify;
+    public String getSource() {
+        return source;
     }
 
-    public void setFirst_classify(String first_classify) {
-        this.first_classify = first_classify;
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public Boolean getIs_claim() {
+        return is_claim;
+    }
+
+    public void setIs_claim(Boolean is_claim) {
+        this.is_claim = is_claim;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public String getStudent() {
@@ -84,11 +132,19 @@ public class WorkModel {
         this.student = student;
     }
 
-    public String getSchool() {
-        return school;
+    public LocalDateTime getCreate_at() {
+        return create_at;
     }
 
-    public void setSchool(String school) {
-        this.school = school;
+    public void setCreate_at(LocalDateTime create_at) {
+        this.create_at = create_at;
+    }
+
+    public LocalDateTime getUpdate_at() {
+        return update_at;
+    }
+
+    public void setUpdate_at(LocalDateTime update_at) {
+        this.update_at = update_at;
     }
 }

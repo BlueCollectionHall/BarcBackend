@@ -7,10 +7,10 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 public interface ClubMapper {
-    @Select("SELECT * FROM school_clubs")
+    @Select("SELECT * FROM club")
     List<SchoolClubModel> selectAll();
-    @Select("SELECT * FROM school_clubs WHERE school = #{school_id}")
+    @Select("SELECT c.* FROM club c JOIN school_club sc ON c.id = sc.club_id WHERE sc.school_id = #{school_id}")
     List<SchoolClubModel> selectBySchool(@Param("school_id") String schoolId);
-    @Select("SELECT * FROM school_clubs WHERE id = #{club_id}")
+    @Select("SELECT * FROM club WHERE id = #{club_id}")
     SchoolClubModel selectById(@Param("club_id") String clubId);
 }

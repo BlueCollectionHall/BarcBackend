@@ -5,7 +5,7 @@ baseUrl: `/api`
 #### 全部获取
 `GET:` `/schools_all`
 #### 获取唯一
-`GET:` `/school_only`
+`GET:` `/school_only` `param:school_id`
 #### 上传修改
 `POST:` `/up_school`<br>
 请求头：
@@ -21,9 +21,9 @@ baseUrl: `/api`
 #### 全部获取
 `GET:` `/clubs_all`
 #### 通过学园id获取
-`GET:` `/clubs_by_school`
+`GET:` `/clubs_by_school` `param:school_id`
 #### 获取唯一
-`GET:` `/club_only`
+`GET:` `/club_only` `param:club_id`
 #### 上传修改
 `POST:` `/up_club`<br>
 请求头：
@@ -39,11 +39,11 @@ baseUrl: `/api`
 #### 全部获取
 `GET:` `/students_all`
 #### 通过学园id获取
-`GET:` `/students_by_school`
+`GET:` `/students_by_school` `param:school_id`
 #### 通过部团id获取
-`GET:` `/students_by_club`
+`GET:` `/students_by_club` `param:club_id`
 #### 获取唯一
-`GET:` `/student_only`
+`GET:` `/student_only` `param:student_id`
 #### 上传修改
 `POST:` `/up_student`<br>
 请求头：
@@ -55,3 +55,16 @@ baseUrl: `/api`
 ```
 请求体：`学生实体中全部参数`<br>
 请求参：param：`{"up_type": "参数"}` `upload` `update`
+### 作品信息
+#### 全部获取
+`GET:` `/works_all`
+#### 通过层级分类id获取
+`GET:` `/works_by_category` `param:category_id`
+#### 通过学园id获取
+`GET:` `/works_by_school` `param:school_id`
+#### 通过部团id获取
+`GET:` `/works_by_club` `param:club_id`
+#### 通过学生id获取
+`GET:` `/works_by_student` `param:student_id`
+#### 获取唯一
+`GET:` `/work_only` `param:work_id`
