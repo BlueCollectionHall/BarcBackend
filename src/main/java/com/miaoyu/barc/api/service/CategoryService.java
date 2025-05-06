@@ -15,7 +15,7 @@ public class CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
 
-    public ResponseEntity<J> getCategoriesAllService() {
+    public ResponseEntity<J> getCategoriesService(boolean isTop, String categoryId) {
         List<CategoryData> allCategories = categoryMapper.selectAll();
         // 创建ID到分类映射
         Map<String, CategoryData> categoryMap = new HashMap<>();
@@ -23,8 +23,14 @@ public class CategoryService {
         List<CategoryData> rootCategories = new ArrayList<>();
         for (CategoryData cat : allCategories) {
             categoryMap.put(cat.getId(), cat);
-            if (cat.getLevel() == 1) {
-                rootCategories.add(cat);
+            if (isTop) {
+                if (cat.getLevel() == 1) {
+                    rootCategories.add(cat);
+                }
+            } else {
+                if (cat.getId().equals(categoryId)) {
+                    rootCategories.add(cat);
+                }
             }
         }
         // 建立父子关系

@@ -71,3 +71,5 @@ baseUrl: `/api`
 ### 分类信息
 #### 全部获取
 `GET:` `/categories_all`
+#### 通过任意一级分类id获取本级及其所有后代所有层级分类信息
+`GET:` `/categories_by_category` `param:category_id`
