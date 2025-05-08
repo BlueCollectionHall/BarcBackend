@@ -71,6 +71,13 @@ public class JwtService {
             System.out.println("JwtException" + e.getMessage());
             return new TokenR().token(false, "令牌无效！", null);
         }
+        String[] issuers = payload.getIssuer().split("\\.");
+        if (issuers.length < 2) {
+            return new TokenR().token(false, "未知令牌来源！", null);
+        }
+        if (issuers[2].equals("naigos")) {
+
+        }
         return new TokenR().token(true, null, payload.get("uuid").toString());
     }
 }
