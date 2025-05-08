@@ -29,6 +29,7 @@ public class SignService {
     private VerificationCodeMapper verificationCodeMapper;
     @Autowired
     private UserBasicMapper userBasicMapper;
+
     public ResponseEntity<J> signInUserService(String type, String account, String password) {
         UserBasicModel userBasic;
         switch (type) {

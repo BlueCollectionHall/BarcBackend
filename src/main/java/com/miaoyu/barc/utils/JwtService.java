@@ -35,6 +35,7 @@ public class JwtService {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.getKey()));
         Map<String, Object> claims = new HashMap<>();
         claims.put("uuid", uuid);
+        claims.put("service", "barc");
         return Jwts.builder()
                 .signWith(key, Jwts.SIG.HS256)
                 .issuer(issuer)
