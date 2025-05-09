@@ -2,22 +2,10 @@
 ## 通信接口
 baseUrl: `/user`
 ### 注册相关接口
-#### 发送邮箱验证码
-`GET:` `/get_signup_code`<br>
-请求参：param： `email`<br>
-响应：
-```json
-{
-  "code": 0,
-  "msg": "邮件发送成功",
-  "data": "<unique_id>"
-}
-```
 #### 注册请求
 `POST:` `/sign_up`<br>
 请求参：param： `email`、`code`、`unique_id`<br>
 请求体：
-
 ```json
 {
   "username": "",
