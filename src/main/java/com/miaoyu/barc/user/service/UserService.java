@@ -78,7 +78,7 @@ public class UserService {
         if (!email.equals(vcDB.getUsername())) {
             return ResponseEntity.ok(new ErrorR().normal("验证码记录邮箱与要修改的邮箱不相同！"));
         }
-        if (!code.equals(vcDB.getCode())) {
+        if (!code.equals(vcDB.getCode()) || !vcDB.getScenario().equals("ResetPassword")) {
             return ResponseEntity.ok(new ErrorR().normal("验证码不一致！"));
         }
         String s = passwordHash.passwordHash256(password);
