@@ -47,4 +47,7 @@ public class WorkService {
         }
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, work));
     }
+    public ResponseEntity<J> uploadWorkService(String uuid, WorkModel requestModel) {
+return null;
+    }
 }
