@@ -34,8 +34,6 @@ public class SignController {
     ) {
         return signService.signInUserService(type, account, password);
     }
-    @Autowired
-    private NaigosService naigosService;
     /**通过Naigos登录
      * @param type 登录方式 "uid"/"email"
      * @param account 账号
@@ -46,7 +44,7 @@ public class SignController {
             @RequestParam("account") String account,
             @RequestParam("password") String password
     ) {
-        return null;
+        return signService.signInByNaigosService(type, account, password);
     }
     /**注册
      * @param email 电子邮箱

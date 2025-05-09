@@ -2,6 +2,8 @@ package com.miaoyu.barc.utils;
 
 import com.miaoyu.barc.JwtConfig;
 import com.miaoyu.barc.response.TokenR;
+import com.miaoyu.barc.user.mapper.BarcNaigosUuidMapper;
+import com.miaoyu.barc.user.model.BarcNaigosTokenModel;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -10,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class JwtService {
@@ -22,6 +21,8 @@ public class JwtService {
     public JwtService(JwtConfig jwtConfig) {
         this.jwtConfig = jwtConfig;
     }
+    @Autowired
+    private BarcNaigosUuidMapper barcNaigosUuidMapper;
 
     private String getKey() {
         return jwtConfig.getKey();
@@ -76,7 +77,11 @@ public class JwtService {
             return new TokenR().token(false, "未知令牌来源！", null);
         }
         if (issuers[2].equals("naigos")) {
-
+            BarcNaigosTokenModel barcNaigosUuid = barcNaigosUuidMapper.selectByNaigosUuid(payload.get("uuid").toString());
+            if (Objects.isNull(barcNaigosUuid)) {
+                return new TokenR().token(false, "Naigos服务Token令牌无法互认或记录不存在！", null);
+            }
+            return new TokenR().token(true, null, barcNaigosUuid.getUuid());
         }
         return new TokenR().token(true, null, payload.get("uuid").toString());
     }

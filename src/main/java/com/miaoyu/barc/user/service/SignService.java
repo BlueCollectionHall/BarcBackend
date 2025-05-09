@@ -1,11 +1,11 @@
 package com.miaoyu.barc.user.service;
 
 import com.miaoyu.barc.response.*;
+import com.miaoyu.barc.user.mapper.BarcNaigosUuidMapper;
+import com.miaoyu.barc.user.mapper.UserArchiveMapper;
 import com.miaoyu.barc.user.mapper.UserBasicMapper;
 import com.miaoyu.barc.user.mapper.VerificationCodeMapper;
-import com.miaoyu.barc.user.model.NaigosUserArchiveModel;
-import com.miaoyu.barc.user.model.UserBasicModel;
-import com.miaoyu.barc.user.model.VerificationCodeModel;
+import com.miaoyu.barc.user.model.*;
 import com.miaoyu.barc.utils.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -32,6 +32,10 @@ public class SignService {
     private VerificationCodeMapper verificationCodeMapper;
     @Autowired
     private UserBasicMapper userBasicMapper;
+    @Autowired
+    private BarcNaigosUuidMapper barcNaigosUuidMapper;
+    @Autowired
+    private UserArchiveMapper userArchiveMapper;
 
     public ResponseEntity<J> signInUserService(String type, String account, String password) {
         UserBasicModel userBasic;
@@ -65,14 +69,49 @@ public class SignService {
     public ResponseEntity<J> signInByNaigosService(String type, String account, String password) {
         try {
             String token = naigosService.getNaigosToken(type, account, password);
+            // 未取到Naigos服务token令牌
             if (Objects.isNull(token)) {
-                return ResponseEntity.ok(new SignR().signIn(false));
+                return ResponseEntity.ok(new ErrorR().normal("Naigos服务登录失败！账号或密码不正确！"));
             }
+            // 未取到Naigos服务用户信息
             NaigosUserArchiveModel naigosArchive = naigosService.getNaigosArchive(token);
             if (Objects.isNull(naigosArchive)) {
                 return ResponseEntity.ok(new UserR().noSuchUser());
             }
-            return null;
+            BarcNaigosTokenModel barcNaigosUuid = barcNaigosUuidMapper.selectByNaigosUuid(naigosArchive.getGroup_real_user_id());
+            // 未得到交换表中记录
+            if (Objects.isNull(barcNaigosUuid)) {
+                // 向基础信息表新建记录
+                UserBasicModel userBasic = new UserBasicModel();
+                userBasic.setUuid(new GenerateUUID().getUuid32u());
+                userBasic.setUsername(naigosArchive.getQq_id().toString());
+                userBasic.setEmail(naigosArchive.getEmail().contains("绑定") || naigosArchive.getEmail().contains("未知")? naigosArchive.getQq_id() + "@qq.com": naigosArchive.getEmail());
+                userBasic.setPassword(passwordHash("123456"));
+                userBasic.setEmail_verified(true);
+                boolean insert = userBasicMapper.insert(userBasic);
+                if (insert) {
+                    // 向交换表新建记录
+                    barcNaigosUuid = new BarcNaigosTokenModel();
+                    barcNaigosUuid.setUuid(userBasic.getUuid());
+                    barcNaigosUuid.setNaigos_uuid(naigosArchive.getGroup_real_user_id());
+                    boolean barcNaigosInsert = barcNaigosUuidMapper.insert(barcNaigosUuid);
+                    if (barcNaigosInsert) {
+                        // 向个人信息表新建记录
+                        UserArchiveModel userArchive = new UserArchiveModel();
+                        userArchive.setUuid(userBasic.getUuid());
+                        userArchive.setAvatar(naigosArchive.getAvatar());
+                        userArchive.setNickname(naigosArchive.getNickname());
+                        boolean userArchiveInsert = userArchiveMapper.insert(userArchive);
+                        if (userArchiveInsert) {
+                            return ResponseEntity.ok(new SuccessR().normal(jwtService.jwtSigned(userBasic.getUuid())));
+                        }
+                    }
+                    return ResponseEntity.ok(new SignR().signIn(false));
+                }
+                return ResponseEntity.ok(new SignR().signIn(false));
+            }
+            // 得到交换表记录签发token令牌
+            return ResponseEntity.ok(new SuccessR().normal(jwtService.jwtSigned(barcNaigosUuid.getUuid())));
         } catch (IOException | InterruptedException e) {
             return ResponseEntity.status(401).body(new ErrorR().normal("请求出错"));
         }
@@ -89,7 +128,14 @@ public class SignService {
         userBasic.setPassword(calcPwd);
         userBasic.setUuid(new GenerateUUID().getUuid32u());
         boolean insert = userBasicMapper.insert(userBasic);
-        if (insert) {
+        if (!insert) {
+            return ResponseEntity.ok(new SignR().signUp(false));
+        }
+        UserArchiveModel userArchive = new UserArchiveModel();
+        userArchive.setUuid(userBasic.getUuid());
+        userArchive.setNickname("新用户" + System.currentTimeMillis());
+        boolean userArchiveInsert = userArchiveMapper.insert(userArchive);
+        if (userArchiveInsert) {
             return ResponseEntity.ok(new SignR().signUp(true));
         }
         return ResponseEntity.ok(new SignR().signUp(false));

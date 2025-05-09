@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HelloWorldController {
-    @IgnoreAuth
     @GetMapping("/hello")
     public ResponseEntity<J> hello() {
         return ResponseEntity.ok(new HelloR().Hello());

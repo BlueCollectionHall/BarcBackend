@@ -29,8 +29,9 @@ public class WebConfig {
             // 注册令牌拦截器
             @Override
             public void addInterceptors(InterceptorRegistry registry) {
+                String [] stringArray = new String[]{"/user/**", "/api/**"};
                 registry.addInterceptor(authInterceptor)
-                        .addPathPatterns("/**");
+                        .addPathPatterns(stringArray);
             }
         };
     }

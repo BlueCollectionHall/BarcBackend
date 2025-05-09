@@ -35,7 +35,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("text/plain;charset=UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
         String token = request.getHeader("Authorization");
         if (Objects.isNull(token)) {
             response.getWriter().write("账号未登录！Accept without Authorization!");
