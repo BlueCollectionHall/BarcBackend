@@ -20,4 +20,9 @@ public class UserController {
     public ResponseEntity<J> getMeCurrentControl(HttpServletRequest request) {
         return userService.getMeCurrentService(request.getAttribute("uuid").toString());
     }
+
+    @GetMapping("/basic_me")
+    public ResponseEntity<J> getMeBasicControl(HttpServletRequest request) {
+        return userService.getMeBasicService(request.getAttribute("uuid").toString());
+    }
 }
