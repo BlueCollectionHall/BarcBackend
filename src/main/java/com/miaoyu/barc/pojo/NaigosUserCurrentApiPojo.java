@@ -2,10 +2,10 @@ package com.miaoyu.barc.pojo;
 
 import com.miaoyu.barc.user.model.NaigosUserArchiveModel;
 
-public class NaigosApiPojo {
+public class NaigosUserCurrentApiPojo {
     private Integer code;
     private String message;
-    private Object data;
+    private NaigosUserArchiveModel data;
 
     public Integer getCode() {
         return code;
@@ -23,11 +23,11 @@ public class NaigosApiPojo {
         this.message = message;
     }
 
-    public Object getData() {
+    public NaigosUserArchiveModel getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(NaigosUserArchiveModel data) {
         this.data = data;
     }
 }

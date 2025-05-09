@@ -3,17 +3,20 @@ package com.miaoyu.barc.user.service;
 import com.miaoyu.barc.response.*;
 import com.miaoyu.barc.user.mapper.UserBasicMapper;
 import com.miaoyu.barc.user.mapper.VerificationCodeMapper;
+import com.miaoyu.barc.user.model.NaigosUserArchiveModel;
 import com.miaoyu.barc.user.model.UserBasicModel;
 import com.miaoyu.barc.user.model.VerificationCodeModel;
 import com.miaoyu.barc.utils.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -55,6 +58,23 @@ public class SignService {
             return ResponseEntity.ok(new SuccessR().normal(token));
         } else {
             return ResponseEntity.ok(new ErrorR().normal("密码错误"));
+        }
+    }
+    @Autowired
+    private NaigosService naigosService;
+    public ResponseEntity<J> signInByNaigosService(String type, String account, String password) {
+        try {
+            String token = naigosService.getNaigosToken(type, account, password);
+            if (Objects.isNull(token)) {
+                return ResponseEntity.ok(new SignR().signIn(false));
+            }
+            NaigosUserArchiveModel naigosArchive = naigosService.getNaigosArchive(token);
+            if (Objects.isNull(naigosArchive)) {
+                return ResponseEntity.ok(new UserR().noSuchUser());
+            }
+            return null;
+        } catch (IOException | InterruptedException e) {
+            return ResponseEntity.status(401).body(new ErrorR().normal("请求出错"));
         }
     }
     public ResponseEntity<J> signupUserService(UserBasicModel userBasic, String email) {

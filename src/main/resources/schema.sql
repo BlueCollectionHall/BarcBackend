@@ -155,3 +155,8 @@ CREATE TABLE IF NOT EXISTS student(
     FOREIGN KEY student(club) REFERENCES club(id) ON DELETE CASCADE ,
     FOREIGN KEY student(school) REFERENCES school(id) ON DELETE RESTRICT
 );
+CREATE TABLE IF NOT EXISTS barc_naigos_uuid(
+    uuid VARCHAR(32) PRIMARY KEY NOT NULL ,
+    naigos_uuid VARCHAR(36) UNIQUE NOT NULL ,
+    FOREIGN KEY barc_naigos_uuid(uuid) REFERENCES user_basic(uuid) ON DELETE CASCADE
+);

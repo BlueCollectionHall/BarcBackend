@@ -3,12 +3,17 @@ package com.miaoyu.barc.user.controller;
 import com.miaoyu.barc.annotation.IgnoreAuth;
 import com.miaoyu.barc.annotation.UserPath;
 import com.miaoyu.barc.response.SignR;
+import com.miaoyu.barc.response.SuccessR;
 import com.miaoyu.barc.user.model.UserBasicModel;
 import com.miaoyu.barc.user.service.SignService;
 import com.miaoyu.barc.utils.J;
+import com.miaoyu.barc.utils.NaigosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.Objects;
 
 @RestController
 @UserPath
@@ -29,6 +34,8 @@ public class SignController {
     ) {
         return signService.signInUserService(type, account, password);
     }
+    @Autowired
+    private NaigosService naigosService;
     /**通过Naigos登录
      * @param type 登录方式 "uid"/"email"
      * @param account 账号

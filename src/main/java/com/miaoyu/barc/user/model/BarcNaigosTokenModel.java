@@ -1,17 +1,8 @@
 package com.miaoyu.barc.user.model;
 
 public class BarcNaigosTokenModel {
-    private String id;
     private String uuid;
     private String naigos_uuid;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getUuid() {
         return uuid;
