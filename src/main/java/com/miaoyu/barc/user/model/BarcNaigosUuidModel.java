@@ -1,6 +1,6 @@
 package com.miaoyu.barc.user.model;
 
-public class BarcNaigosTokenModel {
+public class BarcNaigosUuidModel {
     private String uuid;
     private String naigos_uuid;
 

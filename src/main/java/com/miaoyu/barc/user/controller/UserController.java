@@ -43,13 +43,6 @@ public class UserController {
     public ResponseEntity<J> editBasicControl(HttpServletRequest request, @RequestBody UserBasicModel requestModel) {
         return userService.editBasicService(request.getAttribute("uuid").toString(), requestModel);
     }
-    /**获取重置密码验证码
-     * @param email 电子邮箱
-     * @return 验证码唯一ID*/
-    @GetMapping("/reset_password_code")
-    public ResponseEntity<J> getResetPasswordCodeControl(@RequestParam("email") String email) {
-        return userService.getResetPasswordCodeService(email);
-    }
     /**确定重置密码
      * @param email 电子邮箱
      * @param uniqueId 验证码唯一ID

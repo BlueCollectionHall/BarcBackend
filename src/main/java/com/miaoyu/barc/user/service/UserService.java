@@ -1,6 +1,6 @@
 package com.miaoyu.barc.user.service;
 
-import com.miaoyu.barc.email.SendEmail;
+import com.miaoyu.barc.email.utils.SendEmailUtils;
 import com.miaoyu.barc.response.*;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
 import com.miaoyu.barc.user.mapper.UserBasicMapper;
@@ -27,7 +27,7 @@ public class UserService {
     @Autowired
     private UserBasicMapper userBasicMapper;
     @Autowired
-    private SendEmail sendEmail;
+    private SendEmailUtils sendEmailUtils;
     @Autowired
     private PasswordHash passwordHash;
     @Autowired
@@ -69,26 +69,6 @@ public class UserService {
             return ResponseEntity.ok(new ChangeR().udu(true, 3));
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 3));
-    }
-
-    public ResponseEntity<J> getResetPasswordCodeService(String email) {
-        UserBasicModel userBasic = userBasicMapper.selectByEmail(email);
-        if (Objects.isNull(userBasic)) {
-            return ResponseEntity.ok(new UserR().noSuchUser());
-        }
-        String code = new GenerateCode().code(6);
-        VerificationCodeModel vc = new VerificationCodeModel();
-        String unique_id = new GenerateUUID().getUuid36l();
-        vc.setUnique_id(unique_id);
-        vc.setCode(code);
-        vc.setScenario("ResetPassword");
-        vc.setUsername(email);
-        verificationCodeMapper.insert(vc, 5);
-        boolean b = sendEmail.resetPasswordEmail(email, code, 5);
-        if (!b) {
-            return ResponseEntity.ok(new EmailR().email(false));
-        }
-        return ResponseEntity.ok(new EmailR().rKeyEmail(unique_id));
     }
     public ResponseEntity<J> resetPasswordService(String uniqueId, String code, String email, String password) {
         VerificationCodeModel vcDB = verificationCodeMapper.selectByUniqueId(uniqueId);

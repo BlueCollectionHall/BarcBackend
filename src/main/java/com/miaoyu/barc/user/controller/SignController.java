@@ -58,10 +58,4 @@ public class SignController {
         }
         return signService.signupUserService(userBasic, email);
     }
-    /**获取注册验证码
-     * @param email 电子邮箱*/
-    @GetMapping("/get_signup_code")
-    public ResponseEntity<J> getSignupCodeControl(@RequestParam("email") String email) {
-        return signService.getSignupCodeService(email);
-    }
 }

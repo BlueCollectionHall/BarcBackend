@@ -3,7 +3,7 @@ package com.miaoyu.barc.utils;
 import com.miaoyu.barc.JwtConfig;
 import com.miaoyu.barc.response.TokenR;
 import com.miaoyu.barc.user.mapper.BarcNaigosUuidMapper;
-import com.miaoyu.barc.user.model.BarcNaigosTokenModel;
+import com.miaoyu.barc.user.model.BarcNaigosUuidModel;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -77,7 +77,7 @@ public class JwtService {
             return new TokenR().token(false, "未知令牌来源！", null);
         }
         if (issuers[2].equals("naigos")) {
-            BarcNaigosTokenModel barcNaigosUuid = barcNaigosUuidMapper.selectByNaigosUuid(payload.get("uuid").toString());
+            BarcNaigosUuidModel barcNaigosUuid = barcNaigosUuidMapper.selectByNaigosUuid(payload.get("uuid").toString());
             if (Objects.isNull(barcNaigosUuid)) {
                 return new TokenR().token(false, "Naigos服务Token令牌无法互认或记录不存在！", null);
             }

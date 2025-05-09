@@ -1,6 +1,6 @@
 package com.miaoyu.barc.user.service;
 
-import com.miaoyu.barc.email.SendEmail;
+import com.miaoyu.barc.email.utils.SendEmailUtils;
 import com.miaoyu.barc.response.*;
 import com.miaoyu.barc.user.mapper.BarcNaigosUuidMapper;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
@@ -8,27 +8,18 @@ import com.miaoyu.barc.user.mapper.UserBasicMapper;
 import com.miaoyu.barc.user.mapper.VerificationCodeMapper;
 import com.miaoyu.barc.user.model.*;
 import com.miaoyu.barc.utils.*;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Service
 public class SignService {
     @Autowired
-    private SendEmail sendEmail;
+    private SendEmailUtils sendEmailUtils;
     @Autowired
     private JwtService jwtService;
     @Autowired
@@ -83,7 +74,7 @@ public class SignService {
             if (Objects.isNull(naigosArchive)) {
                 return ResponseEntity.ok(new UserR().noSuchUser());
             }
-            BarcNaigosTokenModel barcNaigosUuid = barcNaigosUuidMapper.selectByNaigosUuid(naigosArchive.getGroup_real_user_id());
+            BarcNaigosUuidModel barcNaigosUuid = barcNaigosUuidMapper.selectByNaigosUuid(naigosArchive.getGroup_real_user_id());
             // 未得到交换表中记录
             if (Objects.isNull(barcNaigosUuid)) {
                 // 向基础信息表新建记录
@@ -96,7 +87,7 @@ public class SignService {
                 boolean insert = userBasicMapper.insert(userBasic);
                 if (insert) {
                     // 向交换表新建记录
-                    barcNaigosUuid = new BarcNaigosTokenModel();
+                    barcNaigosUuid = new BarcNaigosUuidModel();
                     barcNaigosUuid.setUuid(userBasic.getUuid());
                     barcNaigosUuid.setNaigos_uuid(naigosArchive.getGroup_real_user_id());
                     boolean barcNaigosInsert = barcNaigosUuidMapper.insert(barcNaigosUuid);
@@ -144,25 +135,6 @@ public class SignService {
             return ResponseEntity.ok(new SignR().signUp(true));
         }
         return ResponseEntity.ok(new SignR().signUp(false));
-    }
-    public ResponseEntity<J> getSignupCodeService(String email) {
-        String code = new GenerateCode().code(6);
-        VerificationCodeModel vc = new VerificationCodeModel();
-        vc.setUnique_id(new GenerateUUID().getUuid36l());
-        vc.setCode(code);
-        vc.setScenario("Signup");
-        vc.setUsername(email);
-        boolean insert = verificationCodeMapper.insert(vc, 30);
-        if (insert) {
-            boolean b = sendEmail.signupEmail(email, code, 30);
-            if (b) {
-                return ResponseEntity.ok(new EmailR().rKeyEmail(vc.getUnique_id()));
-            } else {
-                return ResponseEntity.ok(new EmailR().email(false));
-            }
-        } else {
-            return ResponseEntity.ok(new ErrorR().normal("获取失败"));
-        }
     }
     public J checkSignupCode(String uniqueId, String code, String email) {
         VerificationCodeModel vcDB = verificationCodeMapper.selectByUniqueId(uniqueId);

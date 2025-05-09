@@ -1,4 +1,4 @@
-package com.miaoyu.barc.email;
+package com.miaoyu.barc.email.utils;
 
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 @Service
-public class SendEmail {
+public class SendEmailUtils {
     @Autowired
     private JavaMailSender mailSender;
 
