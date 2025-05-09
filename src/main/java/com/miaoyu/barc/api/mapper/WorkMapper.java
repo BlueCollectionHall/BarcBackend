@@ -16,6 +16,8 @@ public interface WorkMapper {
     List<WorkEntity> selectByClubId(@Param("club_id") String clubId);
     @Select("SELECT * FROM work WHERE student = #{student_id}")
     List<WorkEntity> selectByStudentId(@Param("student_id") String studentId);
+    @Select("SELECT * FROM work WHERE author = #{uuid}")
+    List<WorkEntity> selectByUuid(@Param("uuid") String uuid);
     // 获取当前分类ID下属所有分类中的内容
     @Select("WITH RECURSIVE category_tree AS " +
             "( SELECT c1.* FROM category c1 WHERE c1.id = #{id} UNION ALL " +

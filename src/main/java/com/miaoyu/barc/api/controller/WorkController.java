@@ -4,6 +4,7 @@ import com.miaoyu.barc.annotation.ApiPath;
 import com.miaoyu.barc.annotation.IgnoreAuth;
 import com.miaoyu.barc.api.service.WorkService;
 import com.miaoyu.barc.utils.J;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,6 +63,18 @@ public class WorkController {
             @RequestParam("student_id") String studentId
     ) {
         return workService.getWorksByStudentService(studentId);
+    }
+    /**根据已登录的用户UUID获取符合发布者条件的work实体
+     * @return List类型中包含所有符合条件的work实体*/
+    @GetMapping("/works_by_me")
+    public ResponseEntity<J> getWorksByMeControl(HttpServletRequest request) {
+        return workService.getWorksByMeService(request.getAttribute("uuid").toString());
+    }
+    /**根据已经UUID获取符合发布者条件的work实体
+     * @param uuid uuid
+     * @return List类型中包含所有符合条件的work实体*/
+    public ResponseEntity<J> getWorksByUuidControl(@RequestParam("uuid") String uuid) {
+        return workService.getWorksByMeService(uuid);
     }
     /**根据work_id获取唯一符合条件的work实体
      * @param workId work_id
