@@ -2,6 +2,7 @@ package com.miaoyu.barc.api.mapper;
 
 import com.miaoyu.barc.api.model.WorkModel;
 import com.miaoyu.barc.api.model.entity.WorkEntity;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -27,4 +28,8 @@ public interface WorkMapper {
     List<WorkEntity> selectByCategoryId(@Param("id") String id);
     @Select("SELECT * FROM work WHERE id = #{work_id}")
     WorkModel selectById(@Param("work_id") String workId);
+    @Insert("INSERT INTO work " +
+            "(id, title, description, content, banner_image, cover_image, author, author_nickname, source, student) VALUES " +
+            "(#{id}, #{title}, #{description}, #{content}, #{banner_image}, #{cover_iamge}, #{author}, #{author_nickname}, #{scource}, #{student})")
+    boolean insert(WorkModel workModel);
 }

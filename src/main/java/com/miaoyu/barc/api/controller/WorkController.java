@@ -85,12 +85,14 @@ public class WorkController {
     ) {
         return workService.getWorksByIdService(workId);
     }
-    /***/
+    /**上传作品
+     * @param requestModel 作品的实体
+     * @return 上传是否成功*/
     @PostMapping("/upload_work")
     public ResponseEntity<J> uploadWorkControl(
             HttpServletRequest request,
             @RequestBody WorkModel requestModel
             ) {
-        return null;
+        return workService.uploadWorkService(request.getAttribute("uuid").toString(), requestModel);
     }
 }
