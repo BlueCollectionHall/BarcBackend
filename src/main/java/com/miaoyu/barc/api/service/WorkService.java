@@ -1,6 +1,8 @@
 package com.miaoyu.barc.api.service;
 
+import com.miaoyu.barc.api.mapper.WorkClaimMapper;
 import com.miaoyu.barc.api.mapper.WorkMapper;
+import com.miaoyu.barc.api.model.WorkClaimModel;
 import com.miaoyu.barc.api.model.WorkModel;
 import com.miaoyu.barc.api.model.entity.WorkEntity;
 import com.miaoyu.barc.permission.ComparePermission;
@@ -26,6 +28,8 @@ public class WorkService {
     private WorkMapper workMapper;
     @Autowired
     private UserArchiveMapper userArchiveMapper;
+    @Autowired
+    private WorkClaimMapper workClaimMapper;
 
     public ResponseEntity<J> getWorksAllService() {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectAll()));
@@ -62,17 +66,40 @@ public class WorkService {
         if (Objects.isNull(userArchive)) {
             return ResponseEntity.ok(new UserR().noSuchUser());
         }
-        if (!Objects.isNull(requestModel.getId())) {
-            WorkModel work = workMapper.selectById(requestModel.getId());
-            if (!Objects.isNull(work)) {
-                return ResponseEntity.ok(new ErrorR().normal("作品ID已被其他作品使用！"));
+        if (Objects.isNull(requestModel.getId())) {
+            requestModel.setId(new GenerateUUID().getUuid36l());
+        } else {
+            if (Objects.isNull(workMapper.selectById(requestModel.getId()))) {
+                return ResponseEntity.ok(new ErrorR().normal("作品ID已经被占用！"));
             }
         }
-        requestModel.setId(new GenerateUUID().getUuid36l());
+        // 未被认领
         if (!requestModel.getIs_claim()) {
-            requestModel.setAuthor(uuid);
-            if (Objects.isNull(requestModel.getAuthor_nickname())) {
-                requestModel.setAuthor_nickname(userArchive.getNickname());
+            // 待认领者不在蔚蓝收录馆
+            if (Objects.isNull(requestModel.getAuthor())) {
+                // 上传者没有写入不在本馆的创作者的网络昵称
+                if (Objects.isNull(requestModel.getAuthor_nickname())) {
+                    return ResponseEntity.ok(new ErrorR().normal("待认领者不在本馆，您需要标注收录来源时对方的网络昵称！"));
+                }
+                requestModel.setAuthor("707B0FBF6AAA35B788069B07AEFEA12B");
+            } else {
+                // 待认领者在本馆中
+                UserArchiveModel recipientArchive = userArchiveMapper.selectByUuid(requestModel.getAuthor());
+                if (Objects.isNull(recipientArchive)) {
+                    return ResponseEntity.ok(new UserR().noSuchUser());
+                }
+                WorkClaimModel workClaim = new WorkClaimModel();
+                workClaim.setWork_id(requestModel.getId());
+                workClaim.setInitiator_uuid(uuid);
+                workClaim.setRecipient_uuid(requestModel.getAuthor());
+                boolean insert = workClaimMapper.insert(workClaim);
+                if (!insert) {
+                    return ResponseEntity.ok(new ChangeR().udu(false, 1));
+                }
+            }
+        } else {
+            if (!uuid.equals(requestModel.getAuthor())) {
+                return ResponseEntity.ok(new ErrorR().normal("作品上传者与本账号不一致"));
             }
         }
         boolean insert = workMapper.insert(requestModel);

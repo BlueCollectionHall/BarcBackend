@@ -160,3 +160,15 @@ CREATE TABLE IF NOT EXISTS barc_naigos_uuid(
     naigos_uuid VARCHAR(36) UNIQUE NOT NULL ,
     FOREIGN KEY barc_naigos_uuid(uuid) REFERENCES user_basic(uuid) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS work_claim(
+    work_id VARCHAR(100) PRIMARY KEY NOT NULL ,
+    initiator_uuid VARCHAR(32) NOT NULL ,
+    recipient_uuid VARCHAR(32) NOT NULL ,
+    status INT DEFAULT 0 ,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+    FOREIGN KEY (work_id) REFERENCES work(id) ON DELETE CASCADE ,
+    FOREIGN KEY (initiator_uuid) REFERENCES user_basic(uuid) ON DELETE CASCADE ,
+    FOREIGN KEY (recipient_uuid) REFERENCES user_basic(uuid) ON DELETE CASCADE ,
+    UNIQUE KEY (work_id, initiator_uuid) ,
+    CONSTRAINT chk_no_self_claim CHECK (initiator_uuid <> recipient_uuid)
+);
