@@ -1,14 +1,17 @@
 package com.miaoyu.barc.user.service;
 
-import com.miaoyu.barc.response.ChangeR;
-import com.miaoyu.barc.response.ErrorR;
-import com.miaoyu.barc.response.SuccessR;
-import com.miaoyu.barc.response.UserR;
+import com.miaoyu.barc.email.SendEmail;
+import com.miaoyu.barc.response.*;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
 import com.miaoyu.barc.user.mapper.UserBasicMapper;
+import com.miaoyu.barc.user.mapper.VerificationCodeMapper;
 import com.miaoyu.barc.user.model.UserArchiveModel;
 import com.miaoyu.barc.user.model.UserBasicModel;
+import com.miaoyu.barc.user.model.VerificationCodeModel;
+import com.miaoyu.barc.utils.GenerateCode;
+import com.miaoyu.barc.utils.GenerateUUID;
 import com.miaoyu.barc.utils.J;
+import com.miaoyu.barc.utils.PasswordHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,12 @@ public class UserService {
     private UserArchiveMapper userArchiveMapper;
     @Autowired
     private UserBasicMapper userBasicMapper;
+    @Autowired
+    private SendEmail sendEmail;
+    @Autowired
+    private PasswordHash passwordHash;
+    @Autowired
+    private VerificationCodeMapper verificationCodeMapper;
 
     public ResponseEntity<J> getMeCurrentService(String uuid) {
         UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
@@ -56,6 +65,48 @@ public class UserService {
             return ResponseEntity.ok(new ErrorR().normal("登录账号与要修改的信息不匹配！"));
         }
         boolean b = userBasicMapper.update(requestModel);
+        if (b) {
+            return ResponseEntity.ok(new ChangeR().udu(true, 3));
+        }
+        return ResponseEntity.ok(new ChangeR().udu(false, 3));
+    }
+
+    public ResponseEntity<J> getResetPasswordCodeService(String email) {
+        UserBasicModel userBasic = userBasicMapper.selectByEmail(email);
+        if (Objects.isNull(userBasic)) {
+            return ResponseEntity.ok(new UserR().noSuchUser());
+        }
+        String code = new GenerateCode().code(6);
+        VerificationCodeModel vc = new VerificationCodeModel();
+        String unique_id = new GenerateUUID().getUuid36l();
+        vc.setUnique_id(unique_id);
+        vc.setCode(code);
+        vc.setScenario("ResetPassword");
+        vc.setUsername(email);
+        verificationCodeMapper.insert(vc, 5);
+        boolean b = sendEmail.resetPasswordEmail(email, code, 5);
+        if (!b) {
+            return ResponseEntity.ok(new EmailR().email(false));
+        }
+        return ResponseEntity.ok(new EmailR().rKeyEmail(unique_id));
+    }
+    public ResponseEntity<J> resetPasswordService(String uniqueId, String code, String email, String password) {
+        VerificationCodeModel vcDB = verificationCodeMapper.selectByUniqueId(uniqueId);
+        if (Objects.isNull(vcDB)) {
+            return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        }
+        if (!email.equals(vcDB.getUsername())) {
+            return ResponseEntity.ok(new ErrorR().normal("验证码记录邮箱与要修改的邮箱不相同！"));
+        }
+        if (!code.equals(vcDB.getCode())) {
+            return ResponseEntity.ok(new ErrorR().normal("验证码不一致！"));
+        }
+        String s = passwordHash.passwordHash256(password);
+        if (Objects.isNull(s)) {
+            return ResponseEntity.ok(new ErrorR().normal("密码重置失败！"));
+        }
+        verificationCodeMapper.updateUsed(uniqueId);
+        boolean b = userBasicMapper.updatePassword(uniqueId, password);
         if (b) {
             return ResponseEntity.ok(new ChangeR().udu(true, 3));
         }

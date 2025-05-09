@@ -1,5 +1,6 @@
 package com.miaoyu.barc.user.service;
 
+import com.miaoyu.barc.email.SendEmail;
 import com.miaoyu.barc.response.*;
 import com.miaoyu.barc.user.mapper.BarcNaigosUuidMapper;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
@@ -27,7 +28,11 @@ import java.util.Objects;
 @Service
 public class SignService {
     @Autowired
+    private SendEmail sendEmail;
+    @Autowired
     private JwtService jwtService;
+    @Autowired
+    private PasswordHash passwordHash;
     @Autowired
     private VerificationCodeMapper verificationCodeMapper;
     @Autowired
@@ -53,7 +58,7 @@ public class SignService {
         if (userBasic == null) {
             return ResponseEntity.ok(new UserR().noSuchUser());
         }
-        String s = passwordHash(password);
+        String s = passwordHash.passwordHash256(password);
         if (s == null) {
             return ResponseEntity.ok(new SignR().signIn(false));
         }
@@ -86,7 +91,7 @@ public class SignService {
                 userBasic.setUuid(new GenerateUUID().getUuid32u());
                 userBasic.setUsername(naigosArchive.getQq_id().toString());
                 userBasic.setEmail(naigosArchive.getEmail().contains("绑定") || naigosArchive.getEmail().contains("未知")? naigosArchive.getQq_id() + "@qq.com": naigosArchive.getEmail());
-                userBasic.setPassword(passwordHash("123456"));
+                userBasic.setPassword(passwordHash.passwordHash256("123456"));
                 userBasic.setEmail_verified(true);
                 boolean insert = userBasicMapper.insert(userBasic);
                 if (insert) {
@@ -121,7 +126,7 @@ public class SignService {
             return ResponseEntity.ok(new ErrorR().normal("注册邮箱与验证邮箱不一致"));
         }
         userBasic.setEmail_verified(true);
-        String calcPwd = passwordHash(userBasic.getPassword());
+        String calcPwd = passwordHash.passwordHash256(userBasic.getPassword());
         if (Objects.isNull(calcPwd)) {
             return ResponseEntity.ok(new SignR().signUp(false));
         }
@@ -147,9 +152,9 @@ public class SignService {
         vc.setCode(code);
         vc.setScenario("Signup");
         vc.setUsername(email);
-        boolean insert = verificationCodeMapper.insert(vc);
+        boolean insert = verificationCodeMapper.insert(vc, 30);
         if (insert) {
-            boolean b = sendSignupEmail(email, code);
+            boolean b = sendEmail.signupEmail(email, code, 30);
             if (b) {
                 return ResponseEntity.ok(new EmailR().rKeyEmail(vc.getUnique_id()));
             } else {
@@ -175,43 +180,5 @@ public class SignService {
         }
         verificationCodeMapper.updateUsed(uniqueId);
         return new SuccessR().normal("验证成功");
-    }
-    @Autowired
-    private JavaMailSender mailSender;
-
-    private boolean sendSignupEmail(String to, String code) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom(new InternetAddress("barc@naigos.cn", "蔚蓝收录馆")); // 必须与配置的username一致
-            helper.setTo(to);
-            helper.setSubject("注册验证码");
-            helper.setText("Sensei！欢迎您注册蔚蓝收录馆账号。注册验证码是：" + code + "，有效期30分钟！");
-            mailSender.send(message);
-        }  catch (jakarta.mail.MessagingException | UnsupportedEncodingException e) {
-//            throw new RuntimeException(e);
-            return false;
-        }
-        return true;
-    }
-    @Autowired
-    private AppService appService;
-    // 私有 根据加盐值和SHA256计算密码的哈希值
-    private String passwordHash(String target){
-        String pwdKey = appService.getPwdKey();
-        try{
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            String input = target + pwdKey;
-            byte[] encodedHash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b: encodedHash){
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e){
-            return null;
-        }
     }
 }

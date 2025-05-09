@@ -30,14 +30,40 @@ public class UserController {
         return userService.getMeBasicService(request.getAttribute("uuid").toString());
     }
     /**更新个人信息
-     * @param requestModel 用户个人信息实体*/
+     * @param requestModel 用户个人信息实体
+     * @return 更新是否成功*/
     @PostMapping("/edit_archive")
     public ResponseEntity<J> editArchiveControl(HttpServletRequest request, @RequestBody UserArchiveModel requestModel) {
         return userService.editArchiveService(request.getAttribute("uuid").toString(), requestModel);
     }
-    /**更新个人基础信息*/
+    /**更新个人基础信息
+     * @param requestModel 用户个人基础信息实体
+     * @return 更新是否成功*/
     @PostMapping("/edit_basic")
     public ResponseEntity<J> editBasicControl(HttpServletRequest request, @RequestBody UserBasicModel requestModel) {
         return userService.editBasicService(request.getAttribute("uuid").toString(), requestModel);
     }
+    /**获取重置密码验证码
+     * @param email 电子邮箱
+     * @return 验证码唯一ID*/
+    @GetMapping("/reset_password_code")
+    public ResponseEntity<J> getResetPasswordCodeControl(@RequestParam("email") String email) {
+        return userService.getResetPasswordCodeService(email);
+    }
+    /**确定重置密码
+     * @param email 电子邮箱
+     * @param uniqueId 验证码唯一ID
+     * @param code 验证码
+     * @param password 新密码的明文
+     * @return 重置是否成功*/
+    @GetMapping("/reset_password")
+    public ResponseEntity<J> resetPasswordControl(
+            @RequestParam("email") String email,
+            @RequestParam("unique_id") String uniqueId,
+            @RequestParam("code") String code,
+            @RequestParam("password") String password
+    ) {
+        return userService.resetPasswordService(uniqueId, code, email, password);
+    }
+
 }
