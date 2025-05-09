@@ -130,6 +130,7 @@ public class SignService {
         UserArchiveModel userArchive = new UserArchiveModel();
         userArchive.setUuid(userBasic.getUuid());
         userArchive.setNickname("新用户" + System.currentTimeMillis());
+        userArchive.setAvatar("https://file.naigos.cn:52011/avatar/dc4d81a09fb2728a3c7d028b035652fa");
         boolean userArchiveInsert = userArchiveMapper.insert(userArchive);
         if (userArchiveInsert) {
             return ResponseEntity.ok(new SignR().signUp(true));

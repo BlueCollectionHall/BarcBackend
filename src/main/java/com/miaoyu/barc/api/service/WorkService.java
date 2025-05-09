@@ -69,7 +69,7 @@ public class WorkService {
         if (Objects.isNull(requestModel.getId())) {
             requestModel.setId(new GenerateUUID().getUuid36l());
         } else {
-            if (Objects.isNull(workMapper.selectById(requestModel.getId()))) {
+            if (!Objects.isNull(workMapper.selectById(requestModel.getId()))) {
                 return ResponseEntity.ok(new ErrorR().normal("作品ID已经被占用！"));
             }
         }
@@ -101,6 +101,7 @@ public class WorkService {
             if (!uuid.equals(requestModel.getAuthor())) {
                 return ResponseEntity.ok(new ErrorR().normal("作品上传者与本账号不一致"));
             }
+            requestModel.setAuthor_nickname(userArchive.getNickname());
         }
         boolean insert = workMapper.insert(requestModel);
         if (insert) {

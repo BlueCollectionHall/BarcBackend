@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS user_basic(
 CREATE TABLE IF NOT EXISTS user_archive(
     uuid VARCHAR(32) PRIMARY KEY NOT NULL ,
     nickname VARCHAR(50) NOT NULL DEFAULT '用户' ,
-    avatar VARCHAR(255) NOT NULL DEFAULT 'https://file.naigos.cn:52011/avatar/dc4d81a09fb2728a3c7d028b035652fa' ,
+    avatar VARCHAR(255) NOT NULL ,
     gender TINYINT DEFAULT 0,
     birthday DATE NULL ,
     age INT NULL ,
