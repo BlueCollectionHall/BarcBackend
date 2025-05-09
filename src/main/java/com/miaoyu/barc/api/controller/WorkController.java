@@ -95,4 +95,14 @@ public class WorkController {
             ) {
         return workService.uploadWorkService(request.getAttribute("uuid").toString(), requestModel);
     }
+    /**修改作品（兼容维护者及以上维护性修改）
+     * @param requestModel 作品的实体
+     * @return 上传是否成功*/
+    @PutMapping("/update_work")
+    public ResponseEntity<J> updateWorkControl(
+            HttpServletRequest request,
+            @RequestBody WorkModel requestModel
+    ) {
+        return workService.updateWorkService(request.getAttribute("uuid").toString(), requestModel);
+    }
 }

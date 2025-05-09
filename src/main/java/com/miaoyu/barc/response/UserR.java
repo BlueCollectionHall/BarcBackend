@@ -10,4 +10,11 @@ public class UserR {
         j.setData(j.getMsg());
         return j;
     }
+    public J insufficientAccountPermission() {
+        J j = new J();
+        j.setCode(1);
+        j.setMsg("账号权限不足：Insufficient account permissions");
+        j.setData(j.getMsg());
+        return j;
+    }
 }

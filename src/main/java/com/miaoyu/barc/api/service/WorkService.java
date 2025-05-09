@@ -3,6 +3,8 @@ package com.miaoyu.barc.api.service;
 import com.miaoyu.barc.api.mapper.WorkMapper;
 import com.miaoyu.barc.api.model.WorkModel;
 import com.miaoyu.barc.api.model.entity.WorkEntity;
+import com.miaoyu.barc.permission.ComparePermission;
+import com.miaoyu.barc.permission.PermissionConst;
 import com.miaoyu.barc.response.ChangeR;
 import com.miaoyu.barc.response.ErrorR;
 import com.miaoyu.barc.response.ResourceR;
@@ -78,5 +80,22 @@ public class WorkService {
             return ResponseEntity.ok(new ChangeR().udu(true, 1));
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 1));
+    }
+    public ResponseEntity<J> updateWorkService(String uuid, WorkModel requestModel) {
+        UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
+        if (Objects.isNull(userArchive)) {
+            return ResponseEntity.ok(new UserR().noSuchUser());
+        }
+        if (!uuid.equals(requestModel.getAuthor())) {
+            boolean compare = new ComparePermission().compare(userArchive.getPermission(), PermissionConst.FIR_MAINTAINER);
+            if (!compare) {
+                return ResponseEntity.ok(new UserR().insufficientAccountPermission());
+            }
+        }
+        boolean b = workMapper.update(requestModel);
+        if (b) {
+            return ResponseEntity.ok(new ChangeR().udu(true, 3));
+        }
+        return ResponseEntity.ok(new ChangeR().udu(false, 3));
     }
 }

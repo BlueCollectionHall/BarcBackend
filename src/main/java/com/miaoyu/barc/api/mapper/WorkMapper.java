@@ -5,6 +5,7 @@ import com.miaoyu.barc.api.model.entity.WorkEntity;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -30,6 +31,9 @@ public interface WorkMapper {
     WorkModel selectById(@Param("work_id") String workId);
     @Insert("INSERT INTO work " +
             "(id, title, description, content, banner_image, cover_image, author, author_nickname, source, student) VALUES " +
-            "(#{id}, #{title}, #{description}, #{content}, #{banner_image}, #{cover_iamge}, #{author}, #{author_nickname}, #{scource}, #{student})")
+            "(#{id}, #{title}, #{description}, #{content}, #{banner_image}, #{cover_iamge}, #{author}, #{author_nickname}, #{source}, #{student})")
     boolean insert(WorkModel workModel);
+    @Update("UPDATE work SET title = #{title}, description = #{description}, content = #{content}, banner_image = #{banner_image}, cover_image = #{cover_image}, author = #{author}, author_nickname = #{author_nickname}, is_claim = #{is_claim}, source = #{source}, student = #{student} WHERE id = #{id}")
+    boolean update(WorkModel workModel);
+
 }
