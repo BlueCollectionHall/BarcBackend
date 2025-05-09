@@ -51,4 +51,14 @@ public class UserService {
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 3));
     }
+    public ResponseEntity<J> editBasicService(String uuid, UserBasicModel requestModel) {
+        if (!uuid.equals(requestModel.getUuid())) {
+            return ResponseEntity.ok(new ErrorR().normal("登录账号与要修改的信息不匹配！"));
+        }
+        boolean b = userBasicMapper.update(requestModel);
+        if (b) {
+            return ResponseEntity.ok(new ChangeR().udu(true, 3));
+        }
+        return ResponseEntity.ok(new ChangeR().udu(false, 3));
+    }
 }
