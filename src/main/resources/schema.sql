@@ -172,3 +172,22 @@ CREATE TABLE IF NOT EXISTS work_claim(
     UNIQUE KEY (work_id, initiator_uuid) ,
     CONSTRAINT chk_no_self_claim CHECK (initiator_uuid <> recipient_uuid)
 );
+CREATE TABLE IF NOT EXISTS work_comment(
+    id VARCHAR(36) PRIMARY KEY NOT NULL ,
+    work_id VARCHAR(100) NOT NULL ,
+    author VARCHAR(32) NOT NULL ,
+    content TEXT NOT NULL ,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (work_id) REFERENCES work(id) ON DELETE CASCADE ,
+    INDEX idx_work_id (work_id)
+);
+CREATE TABLE IF NOT EXISTS work_comment_reply(
+    id VARCHAR(36) PRIMARY KEY NOT NULL ,
+    parent_id VARCHAR(36) DEFAULT NULL,
+    author VARCHAR(32) NOT NULL ,
+    reply_user VARCHAR(32) DEFAULT NULL,
+    content TEXT NOT NULL ,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_id) REFERENCES work_comment(id) ON DELETE CASCADE ,
+    INDEX idx_parent_id (parent_id)
+);
