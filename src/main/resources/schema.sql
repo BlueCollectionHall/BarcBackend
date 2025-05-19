@@ -198,3 +198,34 @@ CREATE TABLE IF NOT EXISTS message_board(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_created_at (created_at)
 );
+CREATE TABLE IF NOT EXISTS feedback_type(
+    id VARCHAR(50),
+    name VARCHAR(20),
+    INDEX idx_id (id)
+);
+CREATE TABLE IF NOT EXISTS feedback_option(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(20) NOT NULL ,
+    belong VARCHAR(50) NOT NULL ,
+    INDEX idx_id (id),
+    INDEX idx_belong (belong),
+    FOREIGN KEY (belong) REFERENCES feedback_type(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS feedback_work(
+    id VARCHAR(36) PRIMARY KEY NOT NULL ,
+    work_id VARCHAR(36) NOT NULL ,
+    ipv4 VARCHAR(15) DEFAULT NULL ,
+    device_info TEXT DEFAULT NULL ,
+    author VARCHAR(32) DEFAULT NULL,
+    reason_option INT DEFAULT 0,
+    content TEXT DEFAULT NULL,
+    email VARCHAR(255) NOT NULL ,
+    status BOOLEAN DEFAULT FALSE,
+    note TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_work_id (work_id),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at),
+    FOREIGN KEY (work_id) REFERENCES work(id) ON DELETE CASCADE
+);

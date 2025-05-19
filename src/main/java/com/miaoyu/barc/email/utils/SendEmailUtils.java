@@ -1,5 +1,6 @@
 package com.miaoyu.barc.email.utils;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,21 @@ import java.io.UnsupportedEncodingException;
 public class SendEmailUtils {
     @Autowired
     private JavaMailSender mailSender;
+
+    public boolean customEmail(String to, String subject, String content) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message);
+            helper.setFrom(new InternetAddress("barc@naigos.cn", "蔚蓝收录馆")); // 必须与配置的username一致
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(content);
+            mailSender.send(message);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            return false;
+        }
+        return true;
+    }
 
     public boolean signupEmail(String to, String code, int minute) {
         try {

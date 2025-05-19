@@ -32,7 +32,8 @@ public class WebConfig {
                 String [] stringArray = new String[]{
                         "/user/**",
                         "/api/**",
-                        "/comment/**"
+                        "/comment/**",
+                        "/feedback/**"
                 };
                 registry.addInterceptor(authInterceptor)
                         .addPathPatterns(stringArray);
