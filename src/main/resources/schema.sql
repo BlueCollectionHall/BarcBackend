@@ -199,25 +199,25 @@ CREATE TABLE IF NOT EXISTS message_board(
     INDEX idx_created_at (created_at)
 );
 CREATE TABLE IF NOT EXISTS feedback_type(
-    id VARCHAR(50),
-    name VARCHAR(20),
+    id VARCHAR(50) PRIMARY KEY NOT NULL ,
+    name VARCHAR(20) NOT NULL,
     INDEX idx_id (id)
 );
 CREATE TABLE IF NOT EXISTS feedback_option(
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id VARCHAR(100) PRIMARY KEY NOT NULL ,
     name VARCHAR(20) NOT NULL ,
-    belong VARCHAR(50) NOT NULL ,
+    parent_id VARCHAR(50) NOT NULL ,
     INDEX idx_id (id),
-    INDEX idx_belong (belong),
-    FOREIGN KEY (belong) REFERENCES feedback_type(id) ON DELETE CASCADE
+    INDEX idx_parent_id (parent_id),
+    FOREIGN KEY (parent_id) REFERENCES feedback_type(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS feedback_work(
     id VARCHAR(36) PRIMARY KEY NOT NULL ,
     work_id VARCHAR(36) NOT NULL ,
     ipv4 VARCHAR(15) DEFAULT NULL ,
     device_info TEXT DEFAULT NULL ,
-    author VARCHAR(32) DEFAULT NULL,
-    reason_option INT DEFAULT 0,
+    author VARCHAR(32) DEFAULT NULL ,
+    reason_option VARCHAR(100) NOT NULL ,
     content TEXT DEFAULT NULL,
     email VARCHAR(255) NOT NULL ,
     status BOOLEAN DEFAULT FALSE,

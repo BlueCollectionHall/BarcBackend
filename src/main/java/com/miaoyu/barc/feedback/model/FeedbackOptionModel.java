@@ -1,23 +1,15 @@
 package com.miaoyu.barc.feedback.model;
 
 public class FeedbackOptionModel {
-    private Integer id;
+    private String id;
     private String name;
-    private String belong;
+    private String parent_id;
 
-    public String getBelong() {
-        return belong;
-    }
-
-    public void setBelong(String belong) {
-        this.belong = belong;
-    }
-
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -27,5 +19,13 @@ public class FeedbackOptionModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getParent_id() {
+        return parent_id;
+    }
+
+    public void setParent_id(String parent_id) {
+        this.parent_id = parent_id;
     }
 }

@@ -20,6 +20,11 @@ public class WorkFeedbackController {
         return null;
     }
 
+    @GetMapping("/all_reason_objects")
+    public ResponseEntity<J> getAllWorkFeedbackReasonObjectsControl() {
+        return workFeedbackService.getAllWorkFeedbackReasonObjectsService();
+    }
+
     @IgnoreAuth
     @PostMapping("/upload")
     public ResponseEntity<J> uploadWorkFeedbackControl(
@@ -33,6 +38,6 @@ public class WorkFeedbackController {
             HttpServletRequest request,
             @RequestBody WorkFeedbackModel requestModel
     ) {
-        return null;
+        return workFeedbackService.updateWorkFeedbackService(request.getAttribute("uuid").toString(), requestModel);
     }
 }

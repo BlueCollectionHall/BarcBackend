@@ -8,7 +8,7 @@ public class WorkFeedbackModel {
     private String ipv4;
     private String device_info;
     private String author;
-    private Integer reason_option;
+    private String reason_option;
     private String content;
     private String email;
     private Boolean status;
@@ -80,11 +80,11 @@ public class WorkFeedbackModel {
         this.author = author;
     }
 
-    public Integer getReason_option() {
+    public String getReason_option() {
         return reason_option;
     }
 
-    public void setReason_option(Integer reason_option) {
+    public void setReason_option(String reason_option) {
         this.reason_option = reason_option;
     }
 
