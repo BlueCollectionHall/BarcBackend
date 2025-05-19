@@ -191,3 +191,10 @@ CREATE TABLE IF NOT EXISTS work_comment_reply(
     FOREIGN KEY (parent_id) REFERENCES work_comment(id) ON DELETE CASCADE ,
     INDEX idx_parent_id (parent_id)
 );
+CREATE TABLE IF NOT EXISTS message_board(
+    id VARCHAR(36) PRIMARY KEY NOT NULL ,
+    author VARCHAR(32) NOT NULL ,
+    content TEXT NOT NULL ,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_created_at (created_at)
+);

@@ -7,7 +7,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @MapperScan({
         "com.miaoyu.barc.api.mapper",
-        "com.miaoyu.barc.user.mapper"
+        "com.miaoyu.barc.user.mapper",
+        "com.miaoyu.barc.comment.mapper"
 })
 @EnableScheduling
 @SpringBootApplication

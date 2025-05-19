@@ -1,19 +1,61 @@
 package com.miaoyu.barc.comment.controller;
 
+import com.miaoyu.barc.annotation.IgnoreAuth;
+import com.miaoyu.barc.comment.model.WorkCommentModel;
+import com.miaoyu.barc.comment.model.WorkCommentReplyModel;
+import com.miaoyu.barc.comment.service.WorkCommentService;
 import com.miaoyu.barc.utils.J;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+/**
+ * 作品评论区
+ * */
 @RestController
 @RequestMapping("/comment/work")
 public class WorkCommentController {
+    @Autowired
+    private WorkCommentService workCommentService;
+
+    @IgnoreAuth
     @GetMapping("/comments_by_work")
-    public ResponseEntity<J> getCommentsByWork(
+    public ResponseEntity<J> getCommentsByWorkControl(
             @RequestParam("work_id") String workId
     ) {
+        return workCommentService.getCommentsByWorkService(workId);
+    }
 
+    @PostMapping("/upload_comment")
+    public ResponseEntity<J> uploadCommentControl(
+            HttpServletRequest request,
+            @RequestBody WorkCommentModel requestModel
+            ) {
+        return workCommentService.uploadCommentAndReplyService("comment", request.getAttribute("uuid").toString(), requestModel, null);
+    }
+
+    @PostMapping("/upload_reply")
+    public ResponseEntity<J> uploadReplyControl(
+            HttpServletRequest request,
+            @RequestBody WorkCommentReplyModel requestModel
+            ) {
+        return workCommentService.uploadCommentAndReplyService("reply", request.getAttribute("uuid").toString(), null, requestModel);
+    }
+
+    @DeleteMapping("/delete_comment")
+    public ResponseEntity<J> deleteCommentControl(
+            HttpServletRequest request,
+            @RequestParam("comment_id") String commentId
+    ) {
+        return workCommentService.deleteCommentService(request.getAttribute("uuid").toString(), commentId);
+    }
+
+    @DeleteMapping("/delete_reply")
+    public ResponseEntity<J> deleteReplyControl(
+            HttpServletRequest request,
+            @RequestParam("reply_id") String replyId
+    ) {
+        return workCommentService.deleteReplyService(request.getAttribute("uuid").toString(), replyId);
     }
 }
