@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@ApiPath
+@RequestMapping("/api/work")
 public class WorkController {
     @Autowired
     private WorkService workService;
@@ -19,7 +19,7 @@ public class WorkController {
     /**获取全部Work实体
      * @return List类型中包含所有Work实体*/
     @IgnoreAuth
-    @GetMapping("/works_all")
+    @GetMapping("/all")
     public ResponseEntity<J> getWorksAllControl() {
         return workService.getWorksAllService();
     }
@@ -79,7 +79,7 @@ public class WorkController {
      * @param workId work_id
      * @return 唯一符合条件的work实体*/
     @IgnoreAuth
-    @GetMapping("/work_only")
+    @GetMapping("/only")
     public ResponseEntity<J> getWorkOnlyControl(
             @RequestParam("work_id") String workId
     ) {
@@ -88,7 +88,7 @@ public class WorkController {
     /**上传作品
      * @param requestModel 作品的实体
      * @return 上传是否成功*/
-    @PostMapping("/upload_work")
+    @PostMapping("/upload")
     public ResponseEntity<J> uploadWorkControl(
             HttpServletRequest request,
             @RequestBody WorkModel requestModel
@@ -98,7 +98,7 @@ public class WorkController {
     /**修改作品（兼容维护者及以上维护性修改）
      * @param requestModel 作品的实体
      * @return 上传是否成功*/
-    @PutMapping("/update_work")
+    @PutMapping("/update")
     public ResponseEntity<J> updateWorkControl(
             HttpServletRequest request,
             @RequestBody WorkModel requestModel

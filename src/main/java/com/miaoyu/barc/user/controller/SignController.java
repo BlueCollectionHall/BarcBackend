@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@UserPath
+@RequestMapping("/user/sign")
 @IgnoreAuth
 public class SignController {
     @Autowired
@@ -20,7 +20,7 @@ public class SignController {
      * @param type 登录方式 "username"/"email"
      * @param account 账号
      * @param password 明文密码*/
-    @GetMapping("/sign_in")
+    @GetMapping("/in")
     public ResponseEntity<J> signInUserControl(
             @RequestParam("type") String type,
             @RequestParam("account") String account,
@@ -32,7 +32,7 @@ public class SignController {
      * @param type 登录方式 "uid"/"email"
      * @param account 账号
      * @param password 明文密码*/
-    @GetMapping("/sign_in_by_naigos")
+    @GetMapping("/in_by_naigos")
     public ResponseEntity<J> signInUserByNaigosControl(
             @RequestParam("type") String type,
             @RequestParam("account") String account,
@@ -45,7 +45,7 @@ public class SignController {
      * @param uniqueId 邮箱验证唯一id
      * @param code 邮箱验证码
      * @param userBasic 用户基础信息实体*/
-    @PostMapping("/sign_up")
+    @PostMapping("/up")
     public ResponseEntity<J> signUpUserControl(
             @RequestParam("email") String email,
             @RequestParam("unique_id") String uniqueId,

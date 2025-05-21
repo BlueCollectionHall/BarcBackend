@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@ApiPath
+@RequestMapping("/api/club")
 public class ClubController {
     @Autowired
     private ClubService clubService;
@@ -19,7 +19,7 @@ public class ClubController {
     /**获取BA中全部的club实体
      * @return List类型中包含BA中全部的club实体*/
     @IgnoreAuth
-    @GetMapping("/clubs_all")
+    @GetMapping("/all")
     public ResponseEntity<J> getBaAllClubControl() {
         return clubService.getAllClubsService();
     }
@@ -39,7 +39,7 @@ public class ClubController {
      * @param clubId club的id
      * @return 符合条件的唯一club实体*/
     @IgnoreAuth
-    @GetMapping("/club_only")
+    @GetMapping("/only")
     public ResponseEntity<J> getBaClubOnlyControl(
             @RequestParam("club_id") String clubId
     ) {
@@ -51,7 +51,7 @@ public class ClubController {
      * @param upType 上传方式"upload"/"update"
      * @param request club的实体
      * @return 修改是否正确完成*/
-    @PostMapping("/up_club")
+    @PostMapping("/up")
     public Map<String, Object> upBaSchoolClubControl(
             @RequestHeader("Authorization") String token,
             @RequestParam("up_type") String upType,

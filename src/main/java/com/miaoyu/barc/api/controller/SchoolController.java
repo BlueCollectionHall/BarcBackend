@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@ApiPath
+@RequestMapping("/api/school")
 public class SchoolController {
     @Autowired
     private SchoolService schoolService;
@@ -18,7 +18,7 @@ public class SchoolController {
     /**获取所有school实体
      * @return List类型包含所有school实体*/
     @IgnoreAuth
-    @GetMapping("/schools_all")
+    @GetMapping("/all")
     public ResponseEntity<J> getAllSchoolsControl() {
         return schoolService.getAllSchoolsService();
     }
@@ -28,7 +28,7 @@ public class SchoolController {
      * @param schoolId school的id
      * @return 唯一的school实体*/
     @IgnoreAuth
-    @GetMapping("/school_only")
+    @GetMapping("/only")
     public ResponseEntity<J> getSchoolByIdControl(
             @RequestParam("school_id") String schoolId) {
         return schoolService.getSchoolById(schoolId);
@@ -38,7 +38,7 @@ public class SchoolController {
      * @param upType 上传方式"upload"/"update"
      * @param request school的实体
      * @return 修改是否正确完成*/
-    @PostMapping("/up_school")
+    @PostMapping("/up")
     public ResponseEntity<J> upSchoolControl(
             @RequestParam("up_type") String upType,
             @RequestBody J request) {
