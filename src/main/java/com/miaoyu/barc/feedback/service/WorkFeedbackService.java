@@ -5,7 +5,6 @@ import com.miaoyu.barc.api.model.WorkModel;
 import com.miaoyu.barc.email.utils.SendEmailUtils;
 import com.miaoyu.barc.feedback.mapper.FeedbackMapper;
 import com.miaoyu.barc.feedback.mapper.WorkFeedbackMapper;
-import com.miaoyu.barc.feedback.model.FeedbackOptionModel;
 import com.miaoyu.barc.feedback.model.WorkFeedbackModel;
 import com.miaoyu.barc.permission.PermissionConst;
 import com.miaoyu.barc.response.ChangeR;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -34,7 +32,7 @@ public class WorkFeedbackService {
     @Autowired
     private FeedbackMapper feedbackMapper;
 
-    public ResponseEntity<J> getAllWorkFeedbackReasonObjectsService() {
+    public ResponseEntity<J> getAllWorkFeedbackReasonOptionsService() {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, feedbackMapper.selectOptionsByParentId("work")));
     }
 

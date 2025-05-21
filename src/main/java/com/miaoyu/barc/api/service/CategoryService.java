@@ -1,7 +1,7 @@
 package com.miaoyu.barc.api.service;
 
 import com.miaoyu.barc.api.mapper.CategoryMapper;
-import com.miaoyu.barc.api.model.data.CategoryData;
+import com.miaoyu.barc.api.pojo.CategoryPojo;
 import com.miaoyu.barc.response.ResourceR;
 import com.miaoyu.barc.utils.J;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,12 @@ public class CategoryService {
     private CategoryMapper categoryMapper;
 
     public ResponseEntity<J> getCategoriesService(boolean isTop, String categoryId) {
-        List<CategoryData> allCategories = categoryMapper.selectAll();
+        List<CategoryPojo> allCategories = categoryMapper.selectAll();
         // 创建ID到分类映射
-        Map<String, CategoryData> categoryMap = new HashMap<>();
+        Map<String, CategoryPojo> categoryMap = new HashMap<>();
         // 找出所有顶级分类并映射
-        List<CategoryData> rootCategories = new ArrayList<>();
-        for (CategoryData cat : allCategories) {
+        List<CategoryPojo> rootCategories = new ArrayList<>();
+        for (CategoryPojo cat : allCategories) {
             categoryMap.put(cat.getId(), cat);
             if (isTop) {
                 if (cat.getLevel() == 1) {
@@ -34,9 +34,9 @@ public class CategoryService {
             }
         }
         // 建立父子关系
-        for (CategoryData cat : allCategories) {
+        for (CategoryPojo cat : allCategories) {
             if (cat.getParent_id() != null && !cat.getParent_id().isEmpty()) {
-                CategoryData parent = categoryMap.get(cat.getParent_id());
+                CategoryPojo parent = categoryMap.get(cat.getParent_id());
                 if (parent != null) {
                     parent.addChild(cat);
                 }
@@ -47,12 +47,12 @@ public class CategoryService {
 
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, rootCategories));
     }
-    private void sortCategories(List<CategoryData> categories) {
+    private void sortCategories(List<CategoryPojo> categories) {
         if (categories == null) return;
         // 排序当前层级
-        categories.sort(Comparator.comparingInt(CategoryData::getSort));
+        categories.sort(Comparator.comparingInt(CategoryPojo::getSort));
         // 递归排序子层级
-        for (CategoryData cat : categories) {
+        for (CategoryPojo cat : categories) {
             if (cat.getChildren() != null) {
                 sortCategories(cat.getChildren());
             }

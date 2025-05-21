@@ -20,9 +20,9 @@ public class WorkFeedbackController {
         return null;
     }
 
-    @GetMapping("/all_reason_objects")
-    public ResponseEntity<J> getAllWorkFeedbackReasonObjectsControl() {
-        return workFeedbackService.getAllWorkFeedbackReasonObjectsService();
+    @GetMapping("/all_reason_options")
+    public ResponseEntity<J> getAllWorkFeedbackReasonOptionsControl() {
+        return workFeedbackService.getAllWorkFeedbackReasonOptionsService();
     }
 
     @IgnoreAuth

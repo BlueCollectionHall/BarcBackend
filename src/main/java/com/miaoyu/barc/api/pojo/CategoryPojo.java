@@ -1,4 +1,4 @@
-package com.miaoyu.barc.api.model.data;
+package com.miaoyu.barc.api.pojo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class CategoryData {
+public class CategoryPojo {
     private String id;
     private String parent_id;
     private String name;
@@ -19,9 +19,9 @@ public class CategoryData {
     private String icon;
     private LocalDateTime create_at;
     private LocalDateTime update_at;
-    private List<CategoryData> children; // 子分类列表
+    private List<CategoryPojo> children; // 子分类列表
 
-    public void addChild(CategoryData child) {
+    public void addChild(CategoryPojo child) {
         if (children == null) {
             children = new ArrayList<>();
         }
