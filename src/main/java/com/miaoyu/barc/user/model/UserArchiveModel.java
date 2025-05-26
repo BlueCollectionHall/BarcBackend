@@ -11,7 +11,7 @@ public class UserArchiveModel {
     private LocalDate birthday;
     private Integer age;
     private Integer permission;
-    private LocalDateTime updated_ai;
+    private LocalDateTime updated_at;
 
     public String getUuid() {
         return uuid;
@@ -69,11 +69,11 @@ public class UserArchiveModel {
         this.permission = permission;
     }
 
-    public LocalDateTime getUpdated_ai() {
-        return updated_ai;
+    public LocalDateTime getUpdated_at() {
+        return updated_at;
     }
 
-    public void setUpdated_ai(LocalDateTime updated_ai) {
-        this.updated_ai = updated_ai;
+    public void setUpdated_at(LocalDateTime updated_at) {
+        this.updated_at = updated_at;
     }
 }
