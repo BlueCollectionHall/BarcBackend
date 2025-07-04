@@ -75,33 +75,22 @@ public class WorkService {
         }
         // 未被认领
         if (!requestModel.getIs_claim()) {
-            // 待认领者不在蔚蓝收录馆
-            if (Objects.isNull(requestModel.getAuthor())) {
-                // 上传者没有写入不在本馆的创作者的网络昵称
-                if (Objects.isNull(requestModel.getAuthor_nickname())) {
-                    return ResponseEntity.ok(new ErrorR().normal("待认领者不在本馆，您需要标注收录来源时对方的网络昵称！"));
-                }
-                requestModel.setAuthor("707B0FBF6AAA35B788069B07AEFEA12B");
-            } else {
-                // 待认领者在本馆中
-                UserArchiveModel recipientArchive = userArchiveMapper.selectByUuid(requestModel.getAuthor());
-                if (Objects.isNull(recipientArchive)) {
-                    return ResponseEntity.ok(new UserR().noSuchUser());
-                }
-                WorkClaimModel workClaim = new WorkClaimModel();
-                workClaim.setWork_id(requestModel.getId());
-                workClaim.setInitiator_uuid(uuid);
-                workClaim.setRecipient_uuid(requestModel.getAuthor());
-                boolean insert = workClaimMapper.insert(workClaim);
-                if (!insert) {
-                    return ResponseEntity.ok(new ChangeR().udu(false, 1));
-                }
+            if (Objects.isNull(requestModel.getAuthor_nickname())) {
+                return ResponseEntity.ok(new ErrorR().normal("您需要标明作品来源作者在其他平台的常用昵称！"));
             }
-        } else {
-            if (!uuid.equals(requestModel.getAuthor())) {
-                return ResponseEntity.ok(new ErrorR().normal("作品上传者与本账号不一致"));
+            if (Objects.isNull(requestModel.getUploader())) {
+                return ResponseEntity.ok(new ErrorR().normal("待认领的作品必须填写上传者的UUID信息"));
             }
-            requestModel.setAuthor_nickname(userArchive.getNickname());
+            if (Objects.equals(requestModel.getUploader(), uuid)) {
+                return ResponseEntity.ok(new ErrorR().normal("上传者UUID与已登录账号不一致"));
+            }
+            requestModel.setAuthor("707B0FBF6AAA35B788069B07AEFEA12B");
+        }
+        // 本人作品
+        else {
+            if (!requestModel.getAuthor().equals(uuid)) {
+                return ResponseEntity.ok(new ErrorR().normal("作者UUID与已登录账号不一致"));
+            }
         }
         boolean insert = workMapper.insert(requestModel);
         if (insert) {

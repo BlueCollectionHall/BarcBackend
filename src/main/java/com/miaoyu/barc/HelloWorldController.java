@@ -28,7 +28,7 @@ public class HelloWorldController {
 //            SimpleMailMessage message = new SimpleMailMessage();
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom(new InternetAddress("barc@naigos.cn", "蔚蓝收录馆")); // 必须与配置的username一致
+            helper.setFrom(new InternetAddress("admin@barc.work", "蔚蓝收录馆")); // 必须与配置的username一致
             helper.setTo("1260352143@qq.com");
             helper.setSubject("测试邮件");
             helper.setText("这是一封测试邮件");
