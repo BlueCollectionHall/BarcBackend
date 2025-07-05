@@ -33,17 +33,32 @@ public class UserService {
     @Autowired
     private VerificationCodeMapper verificationCodeMapper;
 
+    public ResponseEntity<J> getCurrentByUuidService(String uuid) {
+        UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
+        if (Objects.isNull(userArchive)) {
+            return ResponseEntity.ok(new UserR().noSuchUser());
+        }
+        return ResponseEntity.ok(new SuccessR().normal(userArchive));
+    }
+    public ResponseEntity<J> getCurrentByUsernameService(String username) {
+        UserArchiveModel userArchive = userArchiveMapper.selectByUsername(username);
+        if (Objects.isNull(userArchive)) {
+            return ResponseEntity.ok(new UserR().noSuchUser());
+        }
+        return ResponseEntity.ok(new SuccessR().normal(userArchive));
+    }
+
     public ResponseEntity<J> getMeCurrentService(String uuid) {
         UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
         if (Objects.isNull(userArchive)) {
-            return ResponseEntity.status(403).body(new UserR().noSuchUser());
+            return ResponseEntity.status(200).body(new UserR().noSuchUser());
         }
         return ResponseEntity.ok(new SuccessR().normal(userArchive));
     }
     public ResponseEntity<J> getMeBasicService(String uuid) {
         UserBasicModel userBasic = userBasicMapper.selectByUuid(uuid);
         if (Objects.isNull(userBasic)) {
-            return ResponseEntity.status(403).body(new UserR().noSuchUser());
+            return ResponseEntity.status(200).body(new UserR().noSuchUser());
         }
         return ResponseEntity.ok(new SuccessR().normal(userBasic));
     }

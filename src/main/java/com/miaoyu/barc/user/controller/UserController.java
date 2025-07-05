@@ -17,6 +17,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**通过UUID获取账号档案的信息
+     * @param uuid UUID
+     * @return 用户的档案信息*/
+    @GetMapping("/current_by_uuid")
+    public ResponseEntity<J> getCurrentByUuidControl(@RequestParam("uuid") String uuid) {
+        return userService.getCurrentByUuidService(uuid);
+    }
+    /**通过用户名获取账号档案的信息
+     * @param username UUID
+     * @return 用户的档案信息*/
+    @GetMapping("/current_by_username")
+    public ResponseEntity<J> getCurrentByUsernameControl(@RequestParam("username") String username) {
+        return userService.getCurrentByUsernameService(username);
+    }
+
     /**通过请求头中Token令牌获取本账号个人信息
      * @return 本账号个人信息*/
     @GetMapping("/current_me")
