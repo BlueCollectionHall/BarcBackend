@@ -18,7 +18,7 @@ public class SendEmailUtils {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom(new InternetAddress("barc@naigos.cn", "蔚蓝收录馆")); // 必须与配置的username一致
+            helper.setFrom(new InternetAddress("admin@barc.work", "蔚蓝收录馆")); // 必须与配置的username一致
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(content);
@@ -33,7 +33,7 @@ public class SendEmailUtils {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom(new InternetAddress("barc@naigos.cn", "蔚蓝收录馆")); // 必须与配置的username一致
+            helper.setFrom(new InternetAddress("admin@barc.work", "蔚蓝收录馆")); // 必须与配置的username一致
             helper.setTo(to);
             helper.setSubject("注册蔚蓝收录馆");
             helper.setText("Sensei！欢迎您注册蔚蓝收录馆账号。注册验证码是：" + code + "，有效期" + minute + "分钟！");
@@ -48,7 +48,7 @@ public class SendEmailUtils {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom(new InternetAddress("barc@naigos.cn", "蔚蓝收录馆")); // 必须与配置的username一致
+            helper.setFrom(new InternetAddress("admin@barc.work", "蔚蓝收录馆")); // 必须与配置的username一致
             helper.setTo(to);
             helper.setSubject("重置密码");
             helper.setText("Sensei！您正在重置密码，重置验证码是：" + code + "，有效期" + minute + "分钟！");
