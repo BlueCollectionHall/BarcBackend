@@ -1,4 +1,4 @@
-package com.miaoyu.barc.api.controller;
+package com.miaoyu.barc.api.work.controller;
 
 import com.miaoyu.barc.annotation.ApiPath;
 import com.miaoyu.barc.utils.J;

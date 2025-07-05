@@ -1,10 +1,9 @@
-package com.miaoyu.barc.api.service;
+package com.miaoyu.barc.api.work.service;
 
-import com.miaoyu.barc.api.mapper.WorkClaimMapper;
-import com.miaoyu.barc.api.mapper.WorkMapper;
-import com.miaoyu.barc.api.model.WorkClaimModel;
-import com.miaoyu.barc.api.model.WorkModel;
-import com.miaoyu.barc.api.model.entity.WorkEntity;
+import com.miaoyu.barc.api.work.mapper.WorkClaimMapper;
+import com.miaoyu.barc.api.work.mapper.WorkMapper;
+import com.miaoyu.barc.api.work.model.WorkModel;
+import com.miaoyu.barc.api.work.model.entity.WorkEntity;
 import com.miaoyu.barc.permission.ComparePermission;
 import com.miaoyu.barc.permission.PermissionConst;
 import com.miaoyu.barc.response.ChangeR;

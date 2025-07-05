@@ -1,9 +1,9 @@
-package com.miaoyu.barc.api.service;
+package com.miaoyu.barc.api.work.service;
 
-import com.miaoyu.barc.api.mapper.WorkCategoryMapper;
-import com.miaoyu.barc.api.mapper.WorkMapper;
-import com.miaoyu.barc.api.model.WorkCategoryModel;
-import com.miaoyu.barc.api.model.WorkModel;
+import com.miaoyu.barc.api.work.mapper.WorkCategoryMapper;
+import com.miaoyu.barc.api.work.mapper.WorkMapper;
+import com.miaoyu.barc.api.work.model.WorkCategoryModel;
+import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.response.ChangeR;
 import com.miaoyu.barc.response.ResourceR;
 import com.miaoyu.barc.response.UserR;
@@ -11,9 +11,6 @@ import com.miaoyu.barc.utils.GenerateUUID;
 import com.miaoyu.barc.utils.J;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Service
 public class WorkCategoryService {

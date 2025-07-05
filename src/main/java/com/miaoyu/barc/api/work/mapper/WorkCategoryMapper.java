@@ -1,6 +1,6 @@
-package com.miaoyu.barc.api.mapper;
+package com.miaoyu.barc.api.work.mapper;
 
-import com.miaoyu.barc.api.model.WorkCategoryModel;
+import com.miaoyu.barc.api.work.model.WorkCategoryModel;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;

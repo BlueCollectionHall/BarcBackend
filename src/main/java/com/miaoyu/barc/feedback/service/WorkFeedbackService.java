@@ -1,7 +1,7 @@
 package com.miaoyu.barc.feedback.service;
 
-import com.miaoyu.barc.api.mapper.WorkMapper;
-import com.miaoyu.barc.api.model.WorkModel;
+import com.miaoyu.barc.api.work.mapper.WorkMapper;
+import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.email.utils.SendEmailUtils;
 import com.miaoyu.barc.feedback.mapper.FeedbackMapper;
 import com.miaoyu.barc.feedback.mapper.WorkFeedbackMapper;

@@ -1,9 +1,8 @@
-package com.miaoyu.barc.api.controller;
+package com.miaoyu.barc.api.work.controller;
 
-import com.miaoyu.barc.annotation.ApiPath;
 import com.miaoyu.barc.annotation.IgnoreAuth;
-import com.miaoyu.barc.api.model.WorkModel;
-import com.miaoyu.barc.api.service.WorkService;
+import com.miaoyu.barc.api.work.model.WorkModel;
+import com.miaoyu.barc.api.work.service.WorkService;
 import com.miaoyu.barc.utils.J;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

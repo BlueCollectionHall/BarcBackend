@@ -1,4 +1,4 @@
-package com.miaoyu.barc.api.model;
+package com.miaoyu.barc.api.work.model;
 
 import java.time.LocalDateTime;
 

@@ -1,7 +1,7 @@
-package com.miaoyu.barc.api.mapper;
+package com.miaoyu.barc.api.work.mapper;
 
-import com.miaoyu.barc.api.model.WorkModel;
-import com.miaoyu.barc.api.model.entity.WorkEntity;
+import com.miaoyu.barc.api.work.model.WorkModel;
+import com.miaoyu.barc.api.work.model.entity.WorkEntity;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

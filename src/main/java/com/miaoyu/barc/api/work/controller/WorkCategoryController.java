@@ -1,8 +1,8 @@
-package com.miaoyu.barc.api.controller;
+package com.miaoyu.barc.api.work.controller;
 
 import com.miaoyu.barc.annotation.IgnoreAuth;
-import com.miaoyu.barc.api.model.WorkCategoryModel;
-import com.miaoyu.barc.api.service.WorkCategoryService;
+import com.miaoyu.barc.api.work.model.WorkCategoryModel;
+import com.miaoyu.barc.api.work.service.WorkCategoryService;
 import com.miaoyu.barc.utils.J;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;

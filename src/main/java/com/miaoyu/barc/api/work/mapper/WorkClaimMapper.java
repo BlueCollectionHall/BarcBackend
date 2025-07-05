@@ -1,6 +1,6 @@
-package com.miaoyu.barc.api.mapper;
+package com.miaoyu.barc.api.work.mapper;
 
-import com.miaoyu.barc.api.model.WorkClaimModel;
+import com.miaoyu.barc.api.work.model.WorkClaimModel;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
