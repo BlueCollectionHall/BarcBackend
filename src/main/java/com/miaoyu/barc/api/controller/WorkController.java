@@ -69,9 +69,11 @@ public class WorkController {
     public ResponseEntity<J> getWorksByMeControl(HttpServletRequest request) {
         return workService.getWorksByMeService(request.getAttribute("uuid").toString());
     }
-    /**根据已经UUID获取符合发布者条件的work实体
+    /**根据已知UUID获取符合发布者条件的work实体
      * @param uuid uuid
      * @return List类型中包含所有符合条件的work实体*/
+    @IgnoreAuth
+    @GetMapping("/works_by_uuid")
     public ResponseEntity<J> getWorksByUuidControl(@RequestParam("uuid") String uuid) {
         return workService.getWorksByMeService(uuid);
     }
@@ -104,5 +106,13 @@ public class WorkController {
             @RequestBody WorkModel requestModel
     ) {
         return workService.updateWorkService(request.getAttribute("uuid").toString(), requestModel);
+    }
+
+    /**删除作品
+     * @param workId 作品ID
+     * @return 删除是否成功*/
+    @DeleteMapping("/delete")
+    public ResponseEntity<J> deleteWorkControl(@RequestParam("work_id") String workId) {
+        return null;
     }
 }

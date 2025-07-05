@@ -81,7 +81,7 @@ public class WorkService {
             if (Objects.isNull(requestModel.getUploader())) {
                 return ResponseEntity.ok(new ErrorR().normal("待认领的作品必须填写上传者的UUID信息"));
             }
-            if (Objects.equals(requestModel.getUploader(), uuid)) {
+            if (!Objects.equals(requestModel.getUploader(), uuid)) {
                 return ResponseEntity.ok(new ErrorR().normal("上传者UUID与已登录账号不一致"));
             }
             requestModel.setAuthor("707B0FBF6AAA35B788069B07AEFEA12B");
@@ -114,5 +114,13 @@ public class WorkService {
             return ResponseEntity.ok(new ChangeR().udu(true, 3));
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 3));
+    }
+
+    public ResponseEntity<J> delectWorkService(String workId) {
+        boolean delete = workMapper.delete(workId);
+        if (delete) {
+            return ResponseEntity.ok(new ChangeR().udu(true, 2));
+        }
+        return ResponseEntity.ok(new ChangeR().udu(false, 2));
     }
 }

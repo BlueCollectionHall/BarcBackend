@@ -25,6 +25,14 @@ public class CategoryController {
         return categoryService.getCategoriesService(true, null);
     }
 
+    /**获取全部分类不分级
+     * @return List类型中包含全部分类但不分级*/
+    @IgnoreAuth
+    @GetMapping("/all_not_graded")
+    public ResponseEntity<J> getCategoriesAllNotGradedControl() {
+        return categoryService.getCategoriesAllNotGradedService();
+    }
+
     /**根据任意层级分类id获取本层级及其后代层级分类
      * @return 本层级实体中List类型包含其后代层级分类*/
     @IgnoreAuth

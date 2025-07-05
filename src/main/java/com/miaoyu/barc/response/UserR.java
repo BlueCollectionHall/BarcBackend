@@ -17,4 +17,11 @@ public class UserR {
         j.setData(j.getMsg());
         return j;
     }
+    public J uuidMismatch() {
+        J j = new J();
+        j.setCode(1);
+        j.setMsg("用户UUID信息不匹配：User UUID information mismatch");
+        j.setData(j.getMsg());
+        return j;
+    }
 }

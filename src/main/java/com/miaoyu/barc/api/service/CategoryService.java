@@ -47,6 +47,11 @@ public class CategoryService {
 
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, rootCategories));
     }
+
+    public ResponseEntity<J> getCategoriesAllNotGradedService() {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, categoryMapper.selectAll()));
+    }
+
     private void sortCategories(List<CategoryPojo> categories) {
         if (categories == null) return;
         // 排序当前层级

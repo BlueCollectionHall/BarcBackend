@@ -2,10 +2,7 @@ package com.miaoyu.barc.api.mapper;
 
 import com.miaoyu.barc.api.model.WorkModel;
 import com.miaoyu.barc.api.model.entity.WorkEntity;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -35,5 +32,6 @@ public interface WorkMapper {
     boolean insert(WorkModel workModel);
     @Update("UPDATE work SET title = #{title}, description = #{description}, content = #{content}, banner_image = #{banner_image}, cover_image = #{cover_image}, author = #{author}, author_nickname = #{author_nickname}, uploader = #{uploader}, is_claim = #{is_claim}, student = #{student} WHERE id = #{id}")
     boolean update(WorkModel workModel);
-
+    @Delete("DELETE FROM work WHERE id = #{id}")
+    boolean delete(@Param("id") String id);
 }
