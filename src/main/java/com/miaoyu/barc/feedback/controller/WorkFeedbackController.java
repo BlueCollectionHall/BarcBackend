@@ -15,6 +15,8 @@ public class WorkFeedbackController {
     @Autowired
     private WorkFeedbackService workFeedbackService;
 
+    /**获取全部作品投诉的实体
+     * @return List类型中包含全部作品投诉实体*/
     @GetMapping("/all")
     public ResponseEntity<J> getAllWorkFeedbacksControl() {
         return null;
@@ -25,6 +27,9 @@ public class WorkFeedbackController {
         return workFeedbackService.getAllWorkFeedbackReasonOptionsService();
     }
 
+    /**上传作品投诉实体
+     * @param request 作品投诉实体
+     * @return 上传是否成功*/
     @IgnoreAuth
     @PostMapping("/upload")
     public ResponseEntity<J> uploadWorkFeedbackControl(
@@ -33,6 +38,9 @@ public class WorkFeedbackController {
         return workFeedbackService.uploadWorkFeedbackService(request);
     }
 
+    /**对作品投诉进行处理
+     * @param request 作品投诉实体
+     * @return 修改是否成功*/
     @PutMapping("/update")
     public ResponseEntity<J> updateWorkFeedbackControl(
             HttpServletRequest request,

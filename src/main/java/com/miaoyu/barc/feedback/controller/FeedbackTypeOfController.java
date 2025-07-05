@@ -20,11 +20,16 @@ public class FeedbackTypeOfController {
         this.feedbackMapper = feedbackMapper;
     }
 
+    /**获取全部投诉反馈分类
+     * @return List类型中包含全部投诉反馈分类*/
     @GetMapping("/all_types")
     public ResponseEntity<J> getFeedbackAllTypesControl() {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, feedbackMapper.selectAllTypes()));
     }
 
+    /**根据投诉反馈分类ID获取其下属的投诉反馈选项
+     * @param typeId 投诉反馈分类ID
+     * @return List类型中包含符合条件的投诉反馈选项*/
     @GetMapping("/options_by_type")
     public ResponseEntity<J> getFeedbackOptionsByTypeControl(
             @RequestParam("type_id") String typeId
