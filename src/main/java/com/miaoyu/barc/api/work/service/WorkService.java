@@ -1,5 +1,6 @@
 package com.miaoyu.barc.api.work.service;
 
+import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
 import com.miaoyu.barc.api.work.mapper.WorkClaimMapper;
 import com.miaoyu.barc.api.work.mapper.WorkMapper;
 import com.miaoyu.barc.api.work.model.WorkModel;
@@ -27,38 +28,53 @@ public class WorkService {
     private WorkMapper workMapper;
     @Autowired
     private UserArchiveMapper userArchiveMapper;
-    @Autowired
-    private WorkClaimMapper workClaimMapper;
 
-    public ResponseEntity<J> getWorksAllService() {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectAll()));
+    public ResponseEntity<J> getWorksAllService(WorkStatusEnum statusEnum) {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectAll(statusEnum)));
     }
 
-    public ResponseEntity<J> getWorksByCategoryService(String categoryId) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByCategoryId(categoryId)));
+    public ResponseEntity<J> getWorksByCategoryService(String categoryId, WorkStatusEnum statusEnum) {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByCategoryId(categoryId, statusEnum)));
     }
 
-    public ResponseEntity<J> getWorksBySchoolService(String schoolId) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectBySchoolId(schoolId)));
+    public ResponseEntity<J> getWorksBySchoolService(String schoolId, WorkStatusEnum statusEnum) {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectBySchoolId(schoolId, statusEnum)));
     }
 
-    public ResponseEntity<J> getWorksByClubService(String clubId) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByClubId(clubId)));
+    public ResponseEntity<J> getWorksByClubService(String clubId, WorkStatusEnum statusEnum) {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByClubId(clubId, statusEnum)));
     }
 
-    public ResponseEntity<J> getWorksByStudentService(String studentId) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByStudentId(studentId)));
+    public ResponseEntity<J> getWorksByStudentService(String studentId, WorkStatusEnum statusEnum) {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByStudentId(studentId, statusEnum)));
     }
-    public ResponseEntity<J> getWorksByMeService(String uuid) {
-        List<WorkEntity> works = workMapper.selectByUuid(uuid);
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, works));
+    public ResponseEntity<J> getWorksByMeService(String uuid, WorkStatusEnum statusEnum) {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByUuid(uuid, statusEnum)));
+    }
+    public ResponseEntity<J> getWorksByUuidService(String uuid, WorkStatusEnum statusEnum) {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByUuid(uuid, statusEnum)));
     }
     public ResponseEntity<J> getWorksByIdService(String workId) {
         WorkModel work = workMapper.selectById(workId);
         if (Objects.isNull(work)) {
             return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
         }
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, work));
+        return switch (work.getStatus()) {
+            case PRIVATE -> ResponseEntity.ok(new ErrorR().normal("私有作品无法访问"));
+            case BAN -> ResponseEntity.ok(new ErrorR().normal("作品已被封禁"));
+            case OFF -> ResponseEntity.ok(new ErrorR().normal("作品已被下架"));
+            default -> ResponseEntity.ok(new ResourceR().resourceSuch(true, work));
+        };
+    }
+    public ResponseEntity<J> getWorkByIdWithMeService(String uuid, String workId) {
+        WorkModel work = workMapper.selectById(workId);
+        if (Objects.isNull(work)) {
+            return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        }
+        if (work.getAuthor().equals(uuid) || work.getUploader().equals(uuid)) {
+            return ResponseEntity.ok(new ResourceR().resourceSuch(true, work));
+        }
+        return ResponseEntity.ok(new UserR().uuidMismatch());
     }
     public ResponseEntity<J> uploadWorkService(String uuid, WorkModel requestModel) {
         UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);

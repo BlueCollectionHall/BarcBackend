@@ -1,5 +1,6 @@
 package com.miaoyu.barc.api.work.model;
 
+import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +21,7 @@ public class WorkModel {
     private String author_nickname;
     private String uploader;
     private Boolean is_claim;
-    private Integer status;
+    private WorkStatusEnum status;
     private String student;
     private LocalDateTime create_at;
     private LocalDateTime update_at;

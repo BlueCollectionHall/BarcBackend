@@ -1,6 +1,7 @@
 package com.miaoyu.barc.api.work.controller;
 
 import com.miaoyu.barc.annotation.IgnoreAuth;
+import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
 import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.service.WorkService;
 import com.miaoyu.barc.utils.J;
@@ -19,8 +20,10 @@ public class WorkController {
      * @return List类型中包含所有Work实体*/
     @IgnoreAuth
     @GetMapping("/all")
-    public ResponseEntity<J> getWorksAllControl() {
-        return workService.getWorksAllService();
+    public ResponseEntity<J> getWorksAllControl(
+            @RequestParam("status") WorkStatusEnum statusEnum
+    ) {
+        return workService.getWorksAllService(statusEnum);
     }
     /**根据层级分类id获取所有符合条件的work实体
      * @param categoryId 层级分类id
@@ -28,9 +31,10 @@ public class WorkController {
     @IgnoreAuth
     @GetMapping("/works_by_category")
     public ResponseEntity<J> getWorksByCategoryControl(
+            @RequestParam("status") WorkStatusEnum statusEnum,
             @RequestParam("category_id") String categoryId
     ) {
-        return workService.getWorksByCategoryService(categoryId);
+        return workService.getWorksByCategoryService(categoryId, statusEnum);
     }
     /**根据school_id获取所有符合条件的work实体
      * @param schoolId school_id
@@ -38,9 +42,10 @@ public class WorkController {
     @IgnoreAuth
     @GetMapping("/works_by_school")
     public ResponseEntity<J> getWorksBySchoolControl(
+            @RequestParam("status") WorkStatusEnum statusEnum,
             @RequestParam("school_id") String schoolId
     ) {
-        return workService.getWorksBySchoolService(schoolId);
+        return workService.getWorksBySchoolService(schoolId, statusEnum);
     }
     /**根据club_id获取所有符合条件的work实体
      * @param clubId club_id
@@ -48,9 +53,10 @@ public class WorkController {
     @IgnoreAuth
     @GetMapping("/works_by_club")
     public ResponseEntity<J> getWorksByClubControl(
+            @RequestParam("status") WorkStatusEnum statusEnum,
             @RequestParam("club_id") String clubId
     ) {
-        return workService.getWorksByClubService(clubId);
+        return workService.getWorksByClubService(clubId, statusEnum);
     }
     /**根据student_id获取所有符合条件的work实体
      * @param studentId student_id
@@ -58,23 +64,27 @@ public class WorkController {
     @IgnoreAuth
     @GetMapping("/works_by_student")
     public ResponseEntity<J> getWorksByStudentControl(
+            @RequestParam("status") WorkStatusEnum statusEnum,
             @RequestParam("student_id") String studentId
     ) {
-        return workService.getWorksByStudentService(studentId);
+        return workService.getWorksByStudentService(studentId, statusEnum);
     }
     /**根据已登录的用户UUID获取符合发布者条件的work实体
      * @return List类型中包含所有符合条件的work实体*/
     @GetMapping("/works_by_me")
-    public ResponseEntity<J> getWorksByMeControl(HttpServletRequest request) {
-        return workService.getWorksByMeService(request.getAttribute("uuid").toString());
+    public ResponseEntity<J> getWorksByMeControl(HttpServletRequest request, @RequestParam("status") WorkStatusEnum statusEnum) {
+        return workService.getWorksByMeService(request.getAttribute("uuid").toString(), statusEnum);
     }
     /**根据已知UUID获取符合发布者条件的work实体
      * @param uuid uuid
      * @return List类型中包含所有符合条件的work实体*/
     @IgnoreAuth
     @GetMapping("/works_by_uuid")
-    public ResponseEntity<J> getWorksByUuidControl(@RequestParam("uuid") String uuid) {
-        return workService.getWorksByMeService(uuid);
+    public ResponseEntity<J> getWorksByUuidControl(
+            @RequestParam("status") WorkStatusEnum statusEnum,
+            @RequestParam("uuid") String uuid
+    ) {
+        return workService.getWorksByMeService(uuid, statusEnum);
     }
     /**根据work_id获取唯一符合条件的work实体
      * @param workId work_id
@@ -85,6 +95,16 @@ public class WorkController {
             @RequestParam("work_id") String workId
     ) {
         return workService.getWorksByIdService(workId);
+    }
+    /**根据work_id和用户的登录信息强制获取work实体
+     * @param workId work_id
+     * @return 唯一符合条件的work实体*/
+    @GetMapping("/only_by_me")
+    public ResponseEntity<J> getWorkByIdWithMeControl(
+            HttpServletRequest request,
+            @RequestParam("work_id") String workId
+    ) {
+        return workService.getWorkByIdWithMeService(request.getAttribute("uuid").toString(), workId);
     }
     /**上传作品
      * @param requestModel 作品的实体

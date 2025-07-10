@@ -1,5 +1,6 @@
 package com.miaoyu.barc.api.work.mapper;
 
+import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
 import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.model.entity.WorkEntity;
 import org.apache.ibatis.annotations.*;
@@ -7,23 +8,29 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 public interface WorkMapper {
-    @Select("SELECT * FROM work")
-    List<WorkEntity> selectAll();
-    @Select("SELECT w.* FROM work w JOIN student stu ON w.student = stu.id WHERE stu.school = #{school_id}")
-    List<WorkEntity> selectBySchoolId(@Param("school_id") String schoolId);
-    @Select("SELECT w.* FROM work w JOIN student stu ON w.student = stu.club WHERE stu.club = #{club_id}")
-    List<WorkEntity> selectByClubId(@Param("club_id") String clubId);
-    @Select("SELECT * FROM work WHERE student = #{student_id}")
-    List<WorkEntity> selectByStudentId(@Param("student_id") String studentId);
-    @Select("SELECT * FROM work WHERE author = #{uuid}")
-    List<WorkEntity> selectByUuid(@Param("uuid") String uuid);
+    @Select("SELECT * FROM work WHERE status = #{status}")
+    List<WorkEntity> selectAll(@Param("status") WorkStatusEnum statusEnum);
+
+    @Select("SELECT w.* FROM work w JOIN student stu ON w.student = stu.id WHERE stu.school = #{school_id} AND status = #{status}")
+    List<WorkEntity> selectBySchoolId(@Param("school_id") String schoolId, @Param("status") WorkStatusEnum statusEnum);
+
+    @Select("SELECT w.* FROM work w JOIN student stu ON w.student = stu.club WHERE stu.club = #{club_id} AND status = #{status}")
+    List<WorkEntity> selectByClubId(@Param("club_id") String clubId, @Param("status") WorkStatusEnum statusEnum);
+
+    @Select("SELECT * FROM work WHERE student = #{student_id} AND status = #{status}")
+    List<WorkEntity> selectByStudentId(@Param("student_id") String studentId, @Param("status") WorkStatusEnum statusEnum);
+
+    @Select("SELECT * FROM work WHERE author = #{uuid} AND status = #{status}")
+    List<WorkEntity> selectByUuid(@Param("uuid") String uuid, @Param("status") WorkStatusEnum statusEnum);
+
     // 获取当前分类ID下属所有分类中的内容
     @Select("WITH RECURSIVE category_tree AS " +
             "( SELECT c1.* FROM category c1 WHERE c1.id = #{id} UNION ALL " +
             "SELECT c2.* FROM category c2 JOIN category_tree ct ON c2.parent_id = ct.id)" +
             "SELECT DISTINCT w.* FROM work w JOIN work_category wc ON w.id = wc.work_id " +
-            "JOIN category_tree ct ON wc.category_id = ct.id")
-    List<WorkEntity> selectByCategoryId(@Param("id") String id);
+            "JOIN category_tree ct ON wc.category_id = ct.id WHERE w.status = #{status, typeHandler=org.apache.ibatis.type.EnumTypeHandler}")
+    List<WorkEntity> selectByCategoryId(@Param("id") String id, @Param("status") WorkStatusEnum statusEnum);
+
     @Select("SELECT * FROM work WHERE id = #{work_id}")
     WorkModel selectById(@Param("work_id") String workId);
     @Insert("INSERT INTO work " +
