@@ -13,12 +13,12 @@ public class PermissionConst {
     public static final int UPPER = 1 << 1; // 收录员 0000 0010 发布、收录、处置作品
     public static final int CREATOR = 1 << 2; // 创作者 0000 0100 与收录员相同
 
-    public static final int DISCIPLINARY_COMMITTEE = 1; // 风纪委员 0000 0100 警告、公告、审批认领
-    public static final int FIR_MAINTAINER = 1 << 2; // 一级管理员 0000 1000 接收、处理（评论、留言）举报
-    public static final int SEC_MAINTAINER = 1 << 3; // 二级管理员 0001 0000 接收、处理（作品）举报
-    public static final int THI_MAINTAINER = 1 << 4; // 三级管理员 0010 0000 接收、处理（用户）举报
-    public static final int ADMINISTRATOR = 1 << 5; // 副馆长 0100 0000 管理所有非馆长用户
-    public static final int ADVANCED_ADMINISTRATOR = 1 << 6; // 馆长 1000 0000 管理所有副馆长
+    public static final int DISCIPLINARY_COMMITTEE = 1; // 风纪委员 0000 0001 警告、公告、审批认领
+    public static final int FIR_MAINTAINER = 1 << 1; // 一级管理员 0000 0010 接收、处理（评论、留言）举报
+    public static final int SEC_MAINTAINER = 1 << 2; // 二级管理员 0000 0100 接收、处理（作品）举报
+    public static final int THI_MAINTAINER = 1 << 3; // 三级管理员 0000 1000 接收、处理（用户）举报
+    public static final int ADMINISTRATOR = 1 << 4; // 副馆长 0001 0000 管理所有非馆长用户
+    public static final int ADVANCED_ADMINISTRATOR = 1 << 5; // 馆长 0010 0000 管理所有副馆长
 
     public List<ValueLabelDto> permissionsByIdentity(UserIdentityEnum identity) {
         List<ValueLabelDto> list = new ArrayList<>();
