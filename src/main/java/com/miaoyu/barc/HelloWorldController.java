@@ -36,7 +36,7 @@ public class HelloWorldController {
             return ResponseEntity.ok("邮件发送成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("邮件发送失败: " + e.getMessage());
+            return ResponseEntity.status(200).body("邮件发送失败: " + e.getMessage());
         }
     }
 }

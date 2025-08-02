@@ -9,6 +9,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
+
 @Service
 public class SendEmailUtils {
     @Autowired
@@ -23,7 +25,7 @@ public class SendEmailUtils {
             helper.setSubject(subject);
             helper.setText(content);
             mailSender.send(message);
-        } catch (MessagingException | UnsupportedEncodingException e) {
+        } catch (Exception e) {
             return false;
         }
         return true;

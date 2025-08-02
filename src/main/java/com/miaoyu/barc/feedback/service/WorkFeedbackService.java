@@ -7,10 +7,10 @@ import com.miaoyu.barc.feedback.mapper.FeedbackMapper;
 import com.miaoyu.barc.feedback.mapper.WorkFeedbackMapper;
 import com.miaoyu.barc.feedback.model.WorkFeedbackModel;
 import com.miaoyu.barc.permission.PermissionConst;
-import com.miaoyu.barc.response.ChangeR;
-import com.miaoyu.barc.response.ResourceR;
-import com.miaoyu.barc.response.UserR;
+import com.miaoyu.barc.response.*;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
+import com.miaoyu.barc.user.mapper.UserBasicMapper;
+import com.miaoyu.barc.user.model.UserBasicModel;
 import com.miaoyu.barc.utils.GenerateUUID;
 import com.miaoyu.barc.utils.J;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +31,8 @@ public class WorkFeedbackService {
     private UserArchiveMapper userArchiveMapper;
     @Autowired
     private FeedbackMapper feedbackMapper;
+    @Autowired
+    private UserBasicMapper userBasicMapper;
 
     public ResponseEntity<J> getAllWorkFeedbackReasonOptionsService() {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, feedbackMapper.selectOptionsByParentId("work")));
@@ -57,8 +59,8 @@ public class WorkFeedbackService {
             return ResponseEntity.ok(new UserR().insufficientAccountPermission());
         }
         WorkFeedbackModel workFeedbackDB = workFeedbackMapper.selectById(requestModel.getId());
-        if (Objects.isNull(workFeedbackDB)) {
-            return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        if (Objects.isNull(workFeedbackDB) || workFeedbackDB.getStatus()) {
+            return ResponseEntity.ok(new FeedbackR().notFoundOrCompleted());
         }
         WorkModel work = workMapper.selectById(requestModel.getWork_id());
         if (Objects.isNull(work)) {
@@ -66,6 +68,12 @@ public class WorkFeedbackService {
         }
         boolean b = workFeedbackMapper.update(requestModel.getId(), requestModel.getNote());
         if (b) {
+            UserBasicModel workAuthorBasic = userBasicMapper.selectByUuid(work.getIs_claim() ? work.getAuthor() : work.getUploader());
+            if (!Objects.isNull(workAuthorBasic)) {
+                sendEmailUtils.customEmail(workAuthorBasic.getEmail(),
+                        "作品被投诉并已完成处理",
+                        "您在蔚蓝收录馆中收录的作品：《" + work.getTitle() + "》被投诉了，并已完成处理，处理反馈：" + requestModel.getNote());
+            }
             sendEmailUtils.customEmail(workFeedbackDB.getEmail(),
                     "投诉反馈已处理完成",
                     "您对蔚蓝收录馆中收录作品：《" + work.getTitle() + "》的投诉反馈已经完成了处理，处理反馈：" + requestModel.getNote());
