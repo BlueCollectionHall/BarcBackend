@@ -1,6 +1,5 @@
 package com.miaoyu.barc.user.enumeration;
 
-import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
 import com.miaoyu.barc.utils.dto.ValueLabelDto;
 
 import java.util.Arrays;
@@ -10,8 +9,8 @@ public enum UserIdentityEnum {
     USER("用户"),
     MANAGER("管理者");
 
-    private static final List<ValueLabelDto>  CACHED_OPTIONS = Arrays.stream(WorkStatusEnum.values())
-            .map(e -> new ValueLabelDto(e.name(), e.getName()))
+    private static final List<ValueLabelDto>  CACHED_OPTIONS = Arrays.stream(UserIdentityEnum.values())
+            .map(e -> new ValueLabelDto(e.name(), e.getDisplayName()))
             .toList();
     public static List<ValueLabelDto> getOptions() {
         return CACHED_OPTIONS;

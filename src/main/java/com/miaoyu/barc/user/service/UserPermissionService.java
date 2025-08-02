@@ -12,10 +12,12 @@ import com.miaoyu.barc.user.mapper.UserPermissionMapper;
 import com.miaoyu.barc.user.model.UserArchiveModel;
 import com.miaoyu.barc.user.model.UserBasicModel;
 import com.miaoyu.barc.utils.J;
+import com.miaoyu.barc.utils.dto.ValueLabelDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -32,7 +34,24 @@ public class UserPermissionService {
     private UserBasicMapper userBasicMapper;
 
     public ResponseEntity<J> getUserPermissionsByIdentityService(UserIdentityEnum identity) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, permissionConst.permissionByIdentity(identity)));
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, permissionConst.permissionsByIdentity(identity)));
+    }
+
+    public ResponseEntity<J> getUserPermissionNearMaxService(String uuid) {
+        UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
+        if (userArchive == null) {
+            return ResponseEntity.ok(new UserR().noSuchUser());
+        }
+        return ResponseEntity.ok(new ResourceR().resourceSuch(
+                true,
+                new ValueLabelDto(
+                    Integer.highestOneBit(userArchive.getPermission()),
+                    permissionConst.toString(
+                            userArchive.getIdentity(), Integer.highestOneBit(userArchive.getPermission())
+                    )
+                )
+            )
+        );
     }
 
     public ResponseEntity<J> getUserPermissionCnService(UserIdentityEnum identity, Integer permission) {

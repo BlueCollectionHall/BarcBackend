@@ -39,6 +39,17 @@ public class UserPermissionController {
         return userPermissionService.getUserPermissionCnService(identity, permission);
     }
 
+    @GetMapping("/permission_near_max")
+    @IgnoreAuth
+    public ResponseEntity<J> getUserPermissionNearMaxControl(@RequestParam("uuid") String uuid) {
+        return userPermissionService.getUserPermissionNearMaxService(uuid);
+    }
+
+    @GetMapping("/me_permission_near_max")
+    public ResponseEntity<J> getMePermissionNearMaxControl(HttpServletRequest request) {
+        return userPermissionService.getUserPermissionNearMaxService(request.getAttribute("uuid").toString());
+    }
+
     @Getter
     @Setter
     public static class UserWithPermission{

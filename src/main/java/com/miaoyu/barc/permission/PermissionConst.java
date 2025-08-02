@@ -20,7 +20,7 @@ public class PermissionConst {
     public static final int ADMINISTRATOR = 1 << 5; // 副馆长 0100 0000 管理所有非馆长用户
     public static final int ADVANCED_ADMINISTRATOR = 1 << 6; // 馆长 1000 0000 管理所有副馆长
 
-    public List<ValueLabelDto> permissionByIdentity(UserIdentityEnum identity) {
+    public List<ValueLabelDto> permissionsByIdentity(UserIdentityEnum identity) {
         List<ValueLabelDto> list = new ArrayList<>();
         switch (identity) {
             case USER: {
