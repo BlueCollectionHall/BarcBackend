@@ -30,6 +30,7 @@ public class WebConfig {
             @Override
             public void addInterceptors(InterceptorRegistry registry) {
                 String [] stringArray = new String[]{
+                        "/hello/**",
                         "/user/**",
                         "/api/**",
                         "/comment/**",

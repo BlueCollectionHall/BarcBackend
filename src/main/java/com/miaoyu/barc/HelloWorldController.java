@@ -1,10 +1,12 @@
 package com.miaoyu.barc;
 
 import com.miaoyu.barc.annotation.IgnoreAuth;
+import com.miaoyu.barc.annotation.permission.RequireManagerAndDCAnno;
 import com.miaoyu.barc.response.HelloR;
 import com.miaoyu.barc.utils.J;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -38,5 +40,13 @@ public class HelloWorldController {
             e.printStackTrace();
             return ResponseEntity.status(200).body("邮件发送失败: " + e.getMessage());
         }
+    }
+
+    @Autowired
+    private HelloWorldService helloWorldService;
+
+    @GetMapping("/hello/test_permission_anno")
+    public ResponseEntity<J> testPermissionAnno(HttpServletRequest request) {
+        return helloWorldService.testPermissionAnno(request.getAttribute("uuid").toString());
     }
 }
