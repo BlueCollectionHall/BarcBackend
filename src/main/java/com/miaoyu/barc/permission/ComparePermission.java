@@ -1,5 +1,8 @@
 package com.miaoyu.barc.permission;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class ComparePermission {
     /**比较basic权限值相对于target权限值高低
      * @param basic 要比较的权限值
