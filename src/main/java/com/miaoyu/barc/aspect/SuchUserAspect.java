@@ -1,5 +1,6 @@
 package com.miaoyu.barc.aspect;
 
+import com.miaoyu.barc.annotation.SuchUserAnno;
 import com.miaoyu.barc.response.UserR;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
 import com.miaoyu.barc.user.model.UserArchiveModel;
@@ -16,10 +17,12 @@ public class SuchUserAspect {
     @Autowired
     private UserArchiveMapper userArchiveMapper;
 
-    @Around("@annotation(SuchUserAnno)")
-    public Object suchUserAspect(ProceedingJoinPoint pj) throws Throwable {
-        String uuid = pj.getArgs()[0].toString();
-        UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
+    @Around("@annotation(anno)")
+    public Object suchUserAspect(
+            ProceedingJoinPoint pj,
+            SuchUserAnno anno
+    ) throws Throwable {
+        UserArchiveModel userArchive = userArchiveMapper.selectByUuid(pj.getArgs()[anno.uuidIndex()].toString());
         if (userArchive == null) {
             return ResponseEntity.ok(new UserR().noSuchUser());
         }

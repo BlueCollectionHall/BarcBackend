@@ -1,7 +1,6 @@
 package com.miaoyu.barc;
 
-import com.miaoyu.barc.annotation.RequireHasPermissionAnno;
-import com.miaoyu.barc.annotation.permission.RequireManagerAndDCAnno;
+import com.miaoyu.barc.annotation.permission.RequireHasPermissionAnno;
 import com.miaoyu.barc.permission.PermissionConst;
 import com.miaoyu.barc.response.SuccessR;
 import com.miaoyu.barc.user.enumeration.UserIdentityEnum;
