@@ -1,5 +1,6 @@
 package com.miaoyu.barc.user.service;
 
+import com.miaoyu.barc.annotation.RequireSuchAndPermissionAnno;
 import com.miaoyu.barc.email.utils.SendEmailUtils;
 import com.miaoyu.barc.response.*;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
@@ -33,12 +34,9 @@ public class UserService {
     @Autowired
     private VerificationCodeMapper verificationCodeMapper;
 
+    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
     public ResponseEntity<J> getCurrentByUuidService(String uuid) {
-        UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
-        if (Objects.isNull(userArchive)) {
-            return ResponseEntity.ok(new UserR().noSuchUser());
-        }
-        return ResponseEntity.ok(new SuccessR().normal(userArchive));
+        return ResponseEntity.ok(new SuccessR().normal(userArchiveMapper.selectByUuid(uuid)));
     }
     public ResponseEntity<J> getCurrentByUsernameService(String username) {
         UserArchiveModel userArchive = userArchiveMapper.selectByUsername(username);
@@ -48,6 +46,7 @@ public class UserService {
         return ResponseEntity.ok(new SuccessR().normal(userArchive));
     }
 
+    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
     public ResponseEntity<J> getMeCurrentService(String uuid) {
         UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
         if (Objects.isNull(userArchive)) {
@@ -62,6 +61,7 @@ public class UserService {
         }
         return ResponseEntity.ok(new SuccessR().normal(userBasic));
     }
+
     public ResponseEntity<J> editArchiveService(String uuid, UserArchiveModel requestModel) {
         if (!uuid.equals(requestModel.getUuid())) {
             return ResponseEntity.ok(new ErrorR().normal("登录账号与要修改的信息不匹配！"));

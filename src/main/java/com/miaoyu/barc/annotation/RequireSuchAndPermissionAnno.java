@@ -21,9 +21,11 @@ public @interface RequireSuchAndPermissionAnno {
      * isHasElseUpper：true为二进制为1位，false为十进制>=位
      * ！！！只传输uuidIndex则只校验存在不校验身份权限*/
     @interface Check {
-        int uuidIndex();
+        int uuidIndex() default 0;
         UserIdentityEnum identity() default UserIdentityEnum.USER;
-        int targetPermission() default -1;
+        int targetPermission() default 1;
+
+        boolean isSuchElseRequire() default true;
         boolean isHasElseUpper() default false;
     }
 }

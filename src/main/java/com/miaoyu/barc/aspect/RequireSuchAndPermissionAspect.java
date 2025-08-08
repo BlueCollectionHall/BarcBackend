@@ -36,8 +36,8 @@ public class RequireSuchAndPermissionAspect {
             if (userArchive == null) {
                 return ResponseEntity.ok(new UserR().noSuchUser());
             }
-            // 若是-1 则不进行权限验证
-            if (check.targetPermission() == -1) {
+            // 检测是否鉴权分支
+            if (check.isSuchElseRequire()) {
                 return pj.proceed();
             }
             // 验证身份匹配
