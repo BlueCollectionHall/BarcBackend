@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class HelloWorldService {
 
     @RequireSuchAndPermissionAnno(@RequireSuchAndPermissionAnno.Check(
-            isSuchElseRequire = false, identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.SEC_MAINTAINER
+            isSuchElseRequire = false, identity = UserIdentityEnum.USER, isHasElseUpper = true
     ))
     public ResponseEntity<J> testPermissionAnno(String uuid) {
         return ResponseEntity.ok(new SuccessR().normal("注解放行正常"));

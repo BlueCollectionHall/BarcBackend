@@ -38,6 +38,7 @@ public class UserService {
     public ResponseEntity<J> getCurrentByUuidService(String uuid) {
         return ResponseEntity.ok(new SuccessR().normal(userArchiveMapper.selectByUuid(uuid)));
     }
+
     public ResponseEntity<J> getCurrentByUsernameService(String username) {
         UserArchiveModel userArchive = userArchiveMapper.selectByUsername(username);
         if (Objects.isNull(userArchive)) {
@@ -48,20 +49,15 @@ public class UserService {
 
     @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
     public ResponseEntity<J> getMeCurrentService(String uuid) {
-        UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
-        if (Objects.isNull(userArchive)) {
-            return ResponseEntity.status(200).body(new UserR().noSuchUser());
-        }
-        return ResponseEntity.ok(new SuccessR().normal(userArchive));
-    }
-    public ResponseEntity<J> getMeBasicService(String uuid) {
-        UserBasicModel userBasic = userBasicMapper.selectByUuid(uuid);
-        if (Objects.isNull(userBasic)) {
-            return ResponseEntity.status(200).body(new UserR().noSuchUser());
-        }
-        return ResponseEntity.ok(new SuccessR().normal(userBasic));
+        return ResponseEntity.ok(new SuccessR().normal(userArchiveMapper.selectByUuid(uuid)));
     }
 
+    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
+    public ResponseEntity<J> getMeBasicService(String uuid) {
+        return ResponseEntity.ok(new SuccessR().normal(userBasicMapper.selectByUuid(uuid)));
+    }
+
+    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
     public ResponseEntity<J> editArchiveService(String uuid, UserArchiveModel requestModel) {
         if (!uuid.equals(requestModel.getUuid())) {
             return ResponseEntity.ok(new ErrorR().normal("登录账号与要修改的信息不匹配！"));
@@ -75,6 +71,7 @@ public class UserService {
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 3));
     }
+    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
     public ResponseEntity<J> editBasicService(String uuid, UserBasicModel requestModel) {
         if (!uuid.equals(requestModel.getUuid())) {
             return ResponseEntity.ok(new ErrorR().normal("登录账号与要修改的信息不匹配！"));
@@ -85,6 +82,7 @@ public class UserService {
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 3));
     }
+
     public ResponseEntity<J> resetPasswordService(String uniqueId, String code, String email, String password) {
         VerificationCodeModel vcDB = verificationCodeMapper.selectByUniqueId(uniqueId);
         if (Objects.isNull(vcDB)) {
