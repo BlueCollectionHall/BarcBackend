@@ -1,8 +1,11 @@
 package com.miaoyu.barc.comment.controller;
 
 import com.miaoyu.barc.annotation.IgnoreAuth;
+import com.miaoyu.barc.annotation.SuchWorkCommentAnno;
+import com.miaoyu.barc.comment.mapper.WorkCommentMapper;
 import com.miaoyu.barc.comment.model.WorkCommentModel;
 import com.miaoyu.barc.comment.model.WorkCommentReplyModel;
+import com.miaoyu.barc.comment.pojo.WorkCommentPojo;
 import com.miaoyu.barc.comment.service.WorkCommentService;
 import com.miaoyu.barc.utils.J;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 public class WorkCommentController {
     @Autowired
     private WorkCommentService workCommentService;
+    @Autowired
+    private WorkCommentMapper workCommentMapper;
 
     @IgnoreAuth
     @GetMapping("/comments_by_work")
@@ -44,11 +49,16 @@ public class WorkCommentController {
     }
 
     @DeleteMapping("/delete_comment")
+    @SuchWorkCommentAnno(selectType = "id")
     public ResponseEntity<J> deleteCommentControl(
             HttpServletRequest request,
             @RequestParam("comment_id") String commentId
     ) {
-        return workCommentService.deleteCommentService(request.getAttribute("uuid").toString(), commentId);
+        return workCommentService.deleteCommentService(
+                request.getAttribute("uuid").toString(),
+                workCommentMapper.selectById(commentId).getAuthor(),
+                commentId
+        );
     }
 
     @DeleteMapping("/delete_reply")

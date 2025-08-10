@@ -1,7 +1,6 @@
 package com.miaoyu.barc;
 
-import com.miaoyu.barc.annotation.RequireSuchAndPermissionAnno;
-import com.miaoyu.barc.permission.PermissionConst;
+import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.response.SuccessR;
 import com.miaoyu.barc.user.enumeration.UserIdentityEnum;
 import com.miaoyu.barc.utils.J;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HelloWorldService {
 
-    @RequireSuchAndPermissionAnno(@RequireSuchAndPermissionAnno.Check(
+    @RequireUserAndPermissionAnno(@RequireUserAndPermissionAnno.Check(
             isSuchElseRequire = false, identity = UserIdentityEnum.USER, isHasElseUpper = true
     ))
     public ResponseEntity<J> testPermissionAnno(String uuid) {

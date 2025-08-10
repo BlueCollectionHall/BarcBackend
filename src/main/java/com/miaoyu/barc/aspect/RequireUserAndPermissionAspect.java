@@ -1,6 +1,6 @@
 package com.miaoyu.barc.aspect;
 
-import com.miaoyu.barc.annotation.RequireSuchAndPermissionAnno;
+import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.permission.ComparePermission;
 import com.miaoyu.barc.response.ErrorR;
 import com.miaoyu.barc.response.UserR;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class RequireSuchAndPermissionAspect {
+public class RequireUserAndPermissionAspect {
     @Autowired
     private UserArchiveMapper userArchiveMapper;
     @Autowired
@@ -23,10 +23,10 @@ public class RequireSuchAndPermissionAspect {
     @Around("@annotation(anno)")
     public Object requireSuchAndPermissionAspect(
             ProceedingJoinPoint pj,
-            RequireSuchAndPermissionAnno anno
+            RequireUserAndPermissionAnno anno
     ) throws Throwable {
         Object [] args = pj.getArgs();
-        for (RequireSuchAndPermissionAnno.Check check: anno.value()) {
+        for (RequireUserAndPermissionAnno.Check check: anno.value()) {
             if (check.uuidIndex() < 0 || args.length <= check.uuidIndex()) {
                 return ResponseEntity.ok(new ErrorR().normal("索引越界！"));
             }

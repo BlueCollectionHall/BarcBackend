@@ -1,6 +1,6 @@
 package com.miaoyu.barc.comment.service;
 
-import com.miaoyu.barc.annotation.RequireSelfOrManagerAnno;
+import com.miaoyu.barc.annotation.RequireSelfOrPermissionAnno;
 import com.miaoyu.barc.comment.mapper.WorkCommentMapper;
 import com.miaoyu.barc.comment.mapper.WorkCommentReplyMapper;
 import com.miaoyu.barc.comment.model.WorkCommentModel;
@@ -60,14 +60,8 @@ public class WorkCommentService {
         }
     }
 
-    public ResponseEntity<J> deleteCommentService(String uuid, String commentId) {
-        WorkCommentPojo workCommentPojo = workCommentMapper.selectById(commentId);
-        System.out.println("uuid:"+uuid + " author:"+workCommentPojo.getAuthor());
-        return this.deleteCommentServiceSub(uuid, workCommentPojo.getAuthor(), commentId);
-    }
-
-    @RequireSelfOrManagerAnno(managerPermission = PermissionConst.FIR_MAINTAINER, isHasElseUpper = true)
-    private ResponseEntity<J> deleteCommentServiceSub(String uuid, String authorUuid, String commentId) {
+    @RequireSelfOrPermissionAnno(isHasElseUpper = true, targetPermission = PermissionConst.FIR_MAINTAINER)
+    public ResponseEntity<J> deleteCommentService(String uuid, String authorUuid, String commentId) {
         return ResponseEntity.ok(new ChangeR().udu(workCommentMapper.delete(commentId), 2));
     }
 

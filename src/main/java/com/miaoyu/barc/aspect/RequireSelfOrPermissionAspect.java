@@ -1,6 +1,6 @@
 package com.miaoyu.barc.aspect;
 
-import com.miaoyu.barc.annotation.RequireSelfOrManagerAnno;
+import com.miaoyu.barc.annotation.RequireSelfOrPermissionAnno;
 import com.miaoyu.barc.permission.ComparePermission;
 import com.miaoyu.barc.response.UserR;
 import com.miaoyu.barc.user.enumeration.UserIdentityEnum;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class RequireSelfOrManagerAspect {
+public class RequireSelfOrPermissionAspect {
     @Autowired
     private UserArchiveMapper userArchiveMapper;
     @Autowired
@@ -24,7 +24,7 @@ public class RequireSelfOrManagerAspect {
     @Around("@annotation(anno)")
     public Object requireItemSelfOrManagerAspect(
             ProceedingJoinPoint pj,
-            RequireSelfOrManagerAnno anno
+            RequireSelfOrPermissionAnno anno
     ) throws Throwable {
         Object [] args = pj.getArgs();
         validateArgs(anno, args);
@@ -33,13 +33,13 @@ public class RequireSelfOrManagerAspect {
         if (userArchive == null) {
             return ResponseEntity.ok(new UserR().noSuchUser());
         }
-        if (isAuthor(uuid, args[anno.authorUuidIndex()].toString()) || isManager(userArchive, anno.managerPermission(), anno.isHasElseUpper())) {
+        if (isAuthor(uuid, args[anno.authorUuidIndex()].toString()) || isPermission(userArchive, anno.identity(), anno.targetPermission(), anno.isHasElseUpper())) {
             return pj.proceed();
         }
         return ResponseEntity.ok(new UserR().insufficientAccountPermission());
     }
 
-    private void validateArgs(RequireSelfOrManagerAnno check, Object[] args) {
+    private void validateArgs(RequireSelfOrPermissionAnno check, Object[] args) {
         if (check.uuidIndex() < 0 || check.uuidIndex() >= args.length) {
             throw new IllegalArgumentException("用户UUID参数索引越界");
         }
@@ -52,12 +52,11 @@ public class RequireSelfOrManagerAspect {
     }
 
     private boolean isAuthor(String basicUuid, String authorUuid) {
-        System.out.println(basicUuid + " +++ " + authorUuid);
         return basicUuid.equals(authorUuid);
     }
 
-    private boolean isManager(UserArchiveModel userArchive, int permission, boolean isHasElseUpper) {
-        if (userArchive.getIdentity().equals(UserIdentityEnum.MANAGER)) {
+    private boolean isPermission(UserArchiveModel userArchive, UserIdentityEnum identity, int permission, boolean isHasElseUpper) {
+        if (userArchive.getIdentity().equals(identity)) {
             if (isHasElseUpper) {
                 return comparePermission.has(userArchive.getPermission(), permission);
             }

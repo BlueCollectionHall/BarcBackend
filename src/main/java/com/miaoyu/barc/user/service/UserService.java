@@ -1,6 +1,6 @@
 package com.miaoyu.barc.user.service;
 
-import com.miaoyu.barc.annotation.RequireSuchAndPermissionAnno;
+import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.email.utils.SendEmailUtils;
 import com.miaoyu.barc.response.*;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
@@ -9,8 +9,6 @@ import com.miaoyu.barc.user.mapper.VerificationCodeMapper;
 import com.miaoyu.barc.user.model.UserArchiveModel;
 import com.miaoyu.barc.user.model.UserBasicModel;
 import com.miaoyu.barc.user.model.VerificationCodeModel;
-import com.miaoyu.barc.utils.GenerateCode;
-import com.miaoyu.barc.utils.GenerateUUID;
 import com.miaoyu.barc.utils.J;
 import com.miaoyu.barc.utils.PasswordHash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +32,7 @@ public class UserService {
     @Autowired
     private VerificationCodeMapper verificationCodeMapper;
 
-    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
     public ResponseEntity<J> getCurrentByUuidService(String uuid) {
         return ResponseEntity.ok(new SuccessR().normal(userArchiveMapper.selectByUuid(uuid)));
     }
@@ -47,17 +45,17 @@ public class UserService {
         return ResponseEntity.ok(new SuccessR().normal(userArchive));
     }
 
-    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
     public ResponseEntity<J> getMeCurrentService(String uuid) {
         return ResponseEntity.ok(new SuccessR().normal(userArchiveMapper.selectByUuid(uuid)));
     }
 
-    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
     public ResponseEntity<J> getMeBasicService(String uuid) {
         return ResponseEntity.ok(new SuccessR().normal(userBasicMapper.selectByUuid(uuid)));
     }
 
-    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
     public ResponseEntity<J> editArchiveService(String uuid, UserArchiveModel requestModel) {
         if (!uuid.equals(requestModel.getUuid())) {
             return ResponseEntity.ok(new ErrorR().normal("登录账号与要修改的信息不匹配！"));
@@ -71,7 +69,7 @@ public class UserService {
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 3));
     }
-    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
     public ResponseEntity<J> editBasicService(String uuid, UserBasicModel requestModel) {
         if (!uuid.equals(requestModel.getUuid())) {
             return ResponseEntity.ok(new ErrorR().normal("登录账号与要修改的信息不匹配！"));

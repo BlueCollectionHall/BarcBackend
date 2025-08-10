@@ -7,11 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequireSelfOrManagerAnno {
-    int uuidIndex() default 0;
-    int authorUuidIndex() default 1;
-
-    int managerPermission() default 0;
-
-    boolean isHasElseUpper() default false;
+public @interface SuchWorkCommentAnno {
+    String selectType();
+    int index() default 1;
 }

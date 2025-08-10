@@ -1,7 +1,7 @@
 package com.miaoyu.barc.comment.service;
 
-import com.miaoyu.barc.annotation.RequireSelfOrManagerAnno;
-import com.miaoyu.barc.annotation.RequireSuchAndPermissionAnno;
+import com.miaoyu.barc.annotation.RequireSelfOrPermissionAnno;
+import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.comment.mapper.MessageBoardMapper;
 import com.miaoyu.barc.comment.model.MessageBoardModel;
 import com.miaoyu.barc.permission.PermissionConst;
@@ -34,7 +34,7 @@ public class MessageBoardService {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, messageBoardMapper.selectByLimit(limit)));
     }
 
-    @RequireSuchAndPermissionAnno({@RequireSuchAndPermissionAnno.Check()})
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
     public ResponseEntity<J> uploadBoardMessageService(String uuid, String content) {
         MessageBoardModel messageBoard = new MessageBoardModel();
         messageBoard.setContent(content);
@@ -47,7 +47,7 @@ public class MessageBoardService {
         return ResponseEntity.ok(new ChangeR().udu(false, 1));
     }
 
-    @RequireSelfOrManagerAnno(managerPermission = PermissionConst.FIR_MAINTAINER)
+    @RequireSelfOrPermissionAnno(targetPermission = PermissionConst.FIR_MAINTAINER)
     public ResponseEntity<J> deleteBoardMessageService(String uuid, String messageId) {
         MessageBoardModel messageBoard = messageBoardMapper.selectById(messageId);
         if (messageBoard.getAuthor().equals(uuid) || PermissionConst.FIR_MAINTAINER <= userArchiveMapper.selectByUuid(uuid).getPermission()) {
