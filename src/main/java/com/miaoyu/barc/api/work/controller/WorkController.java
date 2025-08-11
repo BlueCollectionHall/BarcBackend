@@ -1,6 +1,7 @@
 package com.miaoyu.barc.api.work.controller;
 
 import com.miaoyu.barc.annotation.IgnoreAuth;
+import com.miaoyu.barc.annotation.SuchWorkAnno;
 import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
 import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.service.WorkService;
@@ -91,6 +92,7 @@ public class WorkController {
      * @return 唯一符合条件的work实体*/
     @IgnoreAuth
     @GetMapping("/only")
+    @SuchWorkAnno(selectType = "id", index = 0)
     public ResponseEntity<J> getWorkOnlyControl(
             @RequestParam("work_id") String workId
     ) {
@@ -100,6 +102,7 @@ public class WorkController {
      * @param workId work_id
      * @return 唯一符合条件的work实体*/
     @GetMapping("/only_by_me")
+    @SuchWorkAnno(selectType = "id")
     public ResponseEntity<J> getWorkByIdWithMeControl(
             HttpServletRequest request,
             @RequestParam("work_id") String workId
@@ -120,6 +123,7 @@ public class WorkController {
      * @param requestModel 作品的实体
      * @return 上传是否成功*/
     @PutMapping("/update")
+    @SuchWorkAnno(selectType = "model")
     public ResponseEntity<J> updateWorkControl(
             HttpServletRequest request,
             @RequestBody WorkModel requestModel
@@ -131,6 +135,7 @@ public class WorkController {
      * @param workId 作品ID
      * @return 删除是否成功*/
     @DeleteMapping("/delete")
+    @SuchWorkAnno(selectType = "id", index = 0)
     public ResponseEntity<J> deleteWorkControl(@RequestParam("work_id") String workId) {
         return null;
     }

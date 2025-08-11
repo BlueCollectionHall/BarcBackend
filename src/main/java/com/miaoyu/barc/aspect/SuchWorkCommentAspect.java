@@ -2,8 +2,9 @@ package com.miaoyu.barc.aspect;
 
 import com.miaoyu.barc.annotation.SuchWorkCommentAnno;
 import com.miaoyu.barc.comment.mapper.WorkCommentMapper;
-import com.miaoyu.barc.comment.pojo.WorkCommentPojo;
-import com.miaoyu.barc.response.ErrorR;
+import com.miaoyu.barc.comment.mapper.WorkCommentReplyMapper;
+import com.miaoyu.barc.comment.model.WorkCommentModel;
+import com.miaoyu.barc.comment.model.WorkCommentReplyModel;
 import com.miaoyu.barc.response.ResourceR;
 import com.miaoyu.barc.utils.J;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -18,15 +19,31 @@ import org.springframework.stereotype.Component;
 public class SuchWorkCommentAspect {
     @Autowired
     private WorkCommentMapper workCommentMapper;
-
+    @Autowired
+    private WorkCommentReplyMapper workCommentReplyMapper;
     @Around("@annotation(anno)")
     public Object suchWorkCommentAspect(ProceedingJoinPoint pj, SuchWorkCommentAnno anno) throws Throwable {
-        String value = pj.getArgs()[anno.index()].toString();
         ResponseEntity<J> responseSuchFalse = ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
-        return switch (anno.selectType()) {
-            case "id" -> workCommentMapper.selectById(value) == null ? responseSuchFalse : pj.proceed();
-            case "work_id" -> workCommentMapper.selectByWorkId(value).isEmpty() ? responseSuchFalse : pj.proceed();
-            default -> ResponseEntity.ok(new ErrorR().normal("服务器参数出错！"));
+        if (anno.selectType().equals("id")) {
+            return suchWorkCommentAndReplyById(pj, pj.getArgs()[anno.index()].toString(), anno.commentAndReply());
+        } else if (anno.selectType().equals("model")) {
+            String id = null;
+            if (anno.commentAndReply().equals("comment")) {
+                id = ((WorkCommentModel) pj.getArgs()[anno.index()]).getId();
+            } else if (anno.commentAndReply().equals("reply")) {
+                id = ((WorkCommentReplyModel) pj.getArgs()[anno.index()]).getId();
+            }
+            return suchWorkCommentAndReplyById(pj, id, anno.commentAndReply());
+        }
+        return responseSuchFalse;
+    }
+
+    private Object suchWorkCommentAndReplyById(ProceedingJoinPoint pj, String id, String commentAndReply) throws Throwable {
+        ResponseEntity<J> responseSuchFalse = ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        return switch (commentAndReply) {
+            case "comment" -> workCommentMapper.selectById(id) == null ? responseSuchFalse : pj.proceed();
+            case "reply" -> workCommentReplyMapper.selectById(id) == null? responseSuchFalse: pj.proceed();
+            default -> responseSuchFalse;
         };
     }
 }

@@ -65,7 +65,8 @@ public class WorkCommentService {
         return ResponseEntity.ok(new ChangeR().udu(workCommentMapper.delete(commentId), 2));
     }
 
-    public ResponseEntity<J> deleteReplyService(String uuid, String replyId) {
+    @RequireSelfOrPermissionAnno(isHasElseUpper = true, targetPermission = PermissionConst.FIR_MAINTAINER)
+    public ResponseEntity<J> deleteReplyService(String uuid, String authorUuid, String replyId) {
         WorkCommentReplyModel reply = workCommentReplyMapper.selectById(replyId);
         if (reply.getAuthor().equals(uuid) || PermissionConst.FIR_MAINTAINER <= userArchiveMapper.selectByUuid(uuid).getPermission()) {
             boolean delete = workCommentReplyMapper.deleteById(replyId);

@@ -24,10 +24,13 @@ public class SuchWorkAspect {
         Object value = pj.getArgs()[anno.index()];
         ResponseEntity<J> responseSuchFalse = ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
         return switch (anno.selectType()) {
-            case "id" -> workMapper.selectById(value.toString()) == null ? responseSuchFalse : pj.proceed();
-            case "model" ->
-                    workMapper.selectById(((WorkModel) value).getId()) == null ? responseSuchFalse : pj.proceed();
-            default -> ResponseEntity.ok(new ErrorR().normal("服务器参数错误！"));
+            case "id" -> suchWorkById(value.toString()) ? responseSuchFalse : pj.proceed();
+            case "model" -> suchWorkById(((WorkModel) value).getId())? responseSuchFalse: pj.proceed();
+            default -> responseSuchFalse;
         };
+    }
+
+    private boolean suchWorkById(String id) {
+        return workMapper.selectById(id) == null;
     }
 }

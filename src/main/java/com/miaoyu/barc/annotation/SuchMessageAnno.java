@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SuchWorkAnno {
+public @interface SuchMessageAnno {
     String selectType();
-    int index() default 1;
+    int index() default 0;
 }

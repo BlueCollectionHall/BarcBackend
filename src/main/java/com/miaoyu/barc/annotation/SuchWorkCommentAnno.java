@@ -1,13 +1,9 @@
 package com.miaoyu.barc.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.miaoyu.barc.comment.model.WorkCommentModel;
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
 public @interface SuchWorkCommentAnno {
+    String commentAndReply();
     String selectType();
-    int index() default 1;
+    int index() default 0;
 }
