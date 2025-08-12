@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface WorkCommentMapper {
     @Select("SELECT * FROM work_comment WHERE work_id = #{work_id}")
-    List<WorkCommentPojo> selectByWorkId(@Param("work_id") String workId);
+    List<WorkCommentModel> selectByWorkId(@Param("work_id") String workId);
     @Select("SELECT * FROM work_comment WHERE id = #{comment_id}")
     WorkCommentPojo selectById(@Param("comment_id") String commentId);
     @Insert("INSERT INTO work_comment (id, work_id, author, content) VALUES (#{id}, #{work_id}, #{author}, #{content})")

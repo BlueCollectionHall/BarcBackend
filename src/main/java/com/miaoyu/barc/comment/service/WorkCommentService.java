@@ -9,13 +9,16 @@ import com.miaoyu.barc.comment.pojo.WorkCommentPojo;
 import com.miaoyu.barc.permission.PermissionConst;
 import com.miaoyu.barc.response.ChangeR;
 import com.miaoyu.barc.response.ResourceR;
+import com.miaoyu.barc.user.enumeration.UserIdentityEnum;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
 import com.miaoyu.barc.utils.GenerateUUID;
 import com.miaoyu.barc.utils.J;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,10 +31,14 @@ public class WorkCommentService {
     private UserArchiveMapper userArchiveMapper;
 
     public ResponseEntity<J> getCommentsByWorkService(String workId) {
-        List<WorkCommentPojo> commentPojos = workCommentMapper.selectByWorkId(workId);
-        for (WorkCommentPojo commentPojo : commentPojos) {
-            List<WorkCommentReplyModel> commentReplies = workCommentReplyMapper.selectByParentId(commentPojo.getId());
+        List<WorkCommentModel> commentModels = workCommentMapper.selectByWorkId(workId);
+        List<WorkCommentPojo> commentPojos = new ArrayList<>();
+        for (WorkCommentModel commentModel : commentModels) {
+            List<WorkCommentReplyModel> commentReplies = workCommentReplyMapper.selectByParentId(commentModel.getId());
+            WorkCommentPojo commentPojo = new WorkCommentPojo();
+            BeanUtils.copyProperties(commentModel, commentPojo);
             commentPojo.setReplies(commentReplies);
+            commentPojos.add(commentPojo);
         }
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, commentPojos));
     }
@@ -60,12 +67,12 @@ public class WorkCommentService {
         }
     }
 
-    @RequireSelfOrPermissionAnno(isHasElseUpper = true, targetPermission = PermissionConst.FIR_MAINTAINER)
+    @RequireSelfOrPermissionAnno(isHasElseUpper = true, identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.FIR_MAINTAINER)
     public ResponseEntity<J> deleteCommentService(String uuid, String authorUuid, String commentId) {
         return ResponseEntity.ok(new ChangeR().udu(workCommentMapper.delete(commentId), 2));
     }
 
-    @RequireSelfOrPermissionAnno(isHasElseUpper = true, targetPermission = PermissionConst.FIR_MAINTAINER)
+    @RequireSelfOrPermissionAnno(isHasElseUpper = true, identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.FIR_MAINTAINER)
     public ResponseEntity<J> deleteReplyService(String uuid, String authorUuid, String replyId) {
         WorkCommentReplyModel reply = workCommentReplyMapper.selectById(replyId);
         if (reply.getAuthor().equals(uuid) || PermissionConst.FIR_MAINTAINER <= userArchiveMapper.selectByUuid(uuid).getPermission()) {
