@@ -1,5 +1,6 @@
 package com.miaoyu.barc.user.controller;
 
+import com.miaoyu.barc.annotation.IgnoreAuth;
 import com.miaoyu.barc.annotation.UserPath;
 import com.miaoyu.barc.response.SuccessR;
 import com.miaoyu.barc.user.model.UserArchiveModel;
@@ -20,6 +21,7 @@ public class UserController {
     /**通过UUID获取账号档案的信息
      * @param uuid UUID
      * @return 用户的档案信息*/
+    @IgnoreAuth
     @GetMapping("/current_by_uuid")
     public ResponseEntity<J> getCurrentByUuidControl(@RequestParam("uuid") String uuid) {
         return userService.getCurrentByUuidService(uuid);
@@ -27,6 +29,7 @@ public class UserController {
     /**通过用户名获取账号档案的信息
      * @param username UUID
      * @return 用户的档案信息*/
+    @IgnoreAuth
     @GetMapping("/current_by_username")
     public ResponseEntity<J> getCurrentByUsernameControl(@RequestParam("username") String username) {
         return userService.getCurrentByUsernameService(username);

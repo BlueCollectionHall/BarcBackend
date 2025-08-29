@@ -1,5 +1,6 @@
 package com.miaoyu.barc.comment.controller;
 
+import com.miaoyu.barc.annotation.IgnoreAuth;
 import com.miaoyu.barc.comment.service.MessageBoardService;
 import com.miaoyu.barc.utils.J;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,11 +17,13 @@ public class MessageBoardController {
     @Autowired
     private MessageBoardService messageBoardService;
 
+    @IgnoreAuth
     @GetMapping("/all")
     public ResponseEntity<J> getAllBoardMessagesControl() {
         return messageBoardService.getAllBoardMessagesService();
     }
 
+    @IgnoreAuth
     @GetMapping("/new")
     public ResponseEntity<J> getNewBoardMessagesControl(@RequestParam("limit") Integer limit) {
         return messageBoardService.getNewBoardMessagesService(limit);
