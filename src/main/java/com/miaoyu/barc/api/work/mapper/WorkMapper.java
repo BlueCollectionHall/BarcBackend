@@ -11,6 +11,9 @@ public interface WorkMapper {
     @Select("SELECT * FROM work WHERE status = #{status}")
     List<WorkEntity> selectAll(@Param("status") WorkStatusEnum statusEnum);
 
+    @Select("SELECT * FROM work WHERE updated_at >= DATE_SUB(now(), INTERVAL #{day} DAY) AND status = #{status}")
+    List<WorkEntity> selectByDay(@Param("day") Integer day, @Param("status") WorkStatusEnum status);
+
     @Select("SELECT w.* FROM work w JOIN student stu ON w.student = stu.id WHERE stu.school = #{school_id} AND status = #{status}")
     List<WorkEntity> selectBySchoolId(@Param("school_id") String schoolId, @Param("status") WorkStatusEnum statusEnum);
 
@@ -22,6 +25,9 @@ public interface WorkMapper {
 
     @Select("SELECT * FROM work WHERE author = #{uuid} AND status = #{status}")
     List<WorkEntity> selectByUuid(@Param("uuid") String uuid, @Param("status") WorkStatusEnum statusEnum);
+
+    @Select("SELECT w.* FROM work w JOIN user_basic ub ON w.author = ub.uuid WHERE ub.username = #{username} AND w.status = #{status}")
+    List<WorkEntity> selectByUsername(@Param("username") String username, @Param("status") WorkStatusEnum statusEnum);
 
     // 获取当前分类ID下属所有分类中的内容
     @Select("WITH RECURSIVE category_tree AS " +

@@ -1,7 +1,8 @@
 package com.miaoyu.barc.api.work.service;
 
+import com.miaoyu.barc.api.mapper.StudentMapper;
+import com.miaoyu.barc.api.model.StudentModel;
 import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
-import com.miaoyu.barc.api.work.mapper.WorkClaimMapper;
 import com.miaoyu.barc.api.work.mapper.WorkMapper;
 import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.model.entity.WorkEntity;
@@ -28,6 +29,22 @@ public class WorkService {
     private WorkMapper workMapper;
     @Autowired
     private UserArchiveMapper userArchiveMapper;
+    @Autowired
+    private StudentMapper studentMapper;
+
+    public ResponseEntity<J> getNewWorkService(int day, boolean isStudentList) {
+        List<WorkEntity> works = workMapper.selectByDay(day, WorkStatusEnum.PUBLIC);
+        if (isStudentList) {
+            List<StudentModel> students = works.stream()
+                    .map(WorkEntity::getStudent)
+                    .distinct()
+                    .map(studentMapper::selectById)
+                    .filter(Objects::nonNull)
+                    .toList();
+            return ResponseEntity.ok(new ResourceR().resourceSuch(true, students));
+        }
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, works));
+    }
 
     public ResponseEntity<J> getWorksAllService(WorkStatusEnum statusEnum) {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectAll(statusEnum)));
@@ -53,6 +70,9 @@ public class WorkService {
     }
     public ResponseEntity<J> getWorksByUuidService(String uuid, WorkStatusEnum statusEnum) {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByUuid(uuid, statusEnum)));
+    }
+    public ResponseEntity<J> getWorksByUsernameService(String username, WorkStatusEnum statusEnum) {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByUsername(username, statusEnum)));
     }
     public ResponseEntity<J> getWorksByIdService(String workId) {
         WorkModel work = workMapper.selectById(workId);

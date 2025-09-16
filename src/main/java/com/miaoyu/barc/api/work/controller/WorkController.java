@@ -17,6 +17,18 @@ public class WorkController {
     @Autowired
     private WorkService workService;
 
+    /**获取最新作品信息
+     * @param day 最新天数
+     * @param isStudentList 是否将作品信息改成去重学生信息
+     * @return List类型中要么是Work实体要么是Student实体*/
+    @IgnoreAuth
+    @GetMapping("/new")
+    public ResponseEntity<J> getNewWorkControl(
+            @RequestParam("day") Integer day,
+            @RequestParam("is_student_list") Boolean isStudentList
+    ) {
+        return workService.getNewWorkService(day, isStudentList);
+    }
     /**获取全部Work实体
      * @return List类型中包含所有Work实体*/
     @IgnoreAuth
@@ -86,6 +98,17 @@ public class WorkController {
             @RequestParam("uuid") String uuid
     ) {
         return workService.getWorksByMeService(uuid, statusEnum);
+    }
+    /**根据已知Username获取符合发布者条件的work实体
+     * @param username username
+     * @return List类型中包含所有符合条件的work实体*/
+    @IgnoreAuth
+    @GetMapping("/works_by_username")
+    public ResponseEntity<J> getWorksByUsernameControl(
+            @RequestParam("status") WorkStatusEnum statusEnum,
+            @RequestParam("username") String username
+    ) {
+        return workService.getWorksByUsernameService(username, statusEnum);
     }
     /**根据work_id获取唯一符合条件的work实体
      * @param workId work_id
