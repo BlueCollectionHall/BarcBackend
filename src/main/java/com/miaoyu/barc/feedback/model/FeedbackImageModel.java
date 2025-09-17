@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 public class FeedbackImageModel {
     private String id;
-    private String parent_id;
-    private String content;
+    private String feedback_id;
+    private String url;
     private LocalDateTime created_at;
-
 }

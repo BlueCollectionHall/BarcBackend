@@ -1,5 +1,7 @@
 package com.miaoyu.barc.feedback.mapper;
 
+import com.miaoyu.barc.feedback.enumeration.FeedbackTypeEnum;
+import com.miaoyu.barc.feedback.model.FeedbackFormModel;
 import com.miaoyu.barc.feedback.model.FeedbackOptionModel;
 import com.miaoyu.barc.feedback.model.FeedbackTypeModel;
 import org.apache.ibatis.annotations.Param;
@@ -12,4 +14,7 @@ public interface FeedbackMapper {
     List<FeedbackOptionModel> selectOptionsByParentId(@Param("parent_id") String parentId);
     @Select("SELECT * FROM feedback_type")
     List<FeedbackTypeModel> selectAllTypes();
+
+    @Select("SELECT * FROM feedback_form WHERE type = #{type}")
+    List<FeedbackFormModel> selectFeedbackFormsByType(@Param("type")FeedbackTypeEnum typeEnum);
 }

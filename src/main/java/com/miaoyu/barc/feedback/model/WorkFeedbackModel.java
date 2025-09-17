@@ -17,10 +17,8 @@ public class WorkFeedbackModel {
     private String content;
     private String email;
     private Boolean status;
-    private String note;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
-
 }
 
 
