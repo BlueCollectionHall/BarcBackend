@@ -7,6 +7,7 @@ import java.util.List;
 
 public enum FeedbackStatusEnum {
     PENDING("待处理"),
+    PROCESSING("处理中"),
     COMPLETED("已完成"),
     REJECTED("已驳回");
 

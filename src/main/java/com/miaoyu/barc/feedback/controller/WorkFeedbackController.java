@@ -41,11 +41,11 @@ public class WorkFeedbackController {
     /**对作品投诉进行处理
      * @param request 作品投诉实体
      * @return 修改是否成功*/
-    @PutMapping("/update")
-    public ResponseEntity<J> updateWorkFeedbackControl(
-            HttpServletRequest request,
-            @RequestBody WorkFeedbackModel requestModel
-    ) {
-        return workFeedbackService.updateWorkFeedbackService(request.getAttribute("uuid").toString(), requestModel);
-    }
+//    @PutMapping("/update")
+//    public ResponseEntity<J> updateWorkFeedbackControl(
+//            HttpServletRequest request,
+//            @RequestBody WorkFeedbackModel requestModel
+//    ) {
+//        return workFeedbackService.updateWorkFeedbackService(request.getAttribute("uuid").toString(), requestModel);
+//    }
 }

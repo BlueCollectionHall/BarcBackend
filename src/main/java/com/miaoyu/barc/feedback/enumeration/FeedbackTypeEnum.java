@@ -12,7 +12,8 @@ public enum FeedbackTypeEnum {
     COMMENT("评论"),
     MESSAGE_BOARD("留言"),
     USER("用户"),
-    SUGGESTION("意见反馈");
+    SUGGESTION("意见反馈"),
+    OTHER("其他");
 
     private final String name;
 

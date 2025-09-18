@@ -226,3 +226,23 @@ CREATE TABLE IF NOT EXISTS feedback_work(
     INDEX idx_created_at (created_at),
     FOREIGN KEY (work_id) REFERENCES work(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS feedback(
+    id VARCHAR(36) PRIMARY KEY NOT NULL ,
+    target_id VARCHAR(36) NOT NULL COMMENT '目标对象ID',
+    ipv4 VARCHAR(15) DEFAULT NULL ,
+    ipv6 VARCHAR(39) DEFAULT NULL ,
+    author VARCHAR(32) DEFAULT NULL,
+    email VARCHAR(255) DEFAULT NULL,
+    content TEXT NOT NULL ,
+    echo TEXT DEFAULT NULL,
+    type VARCHAR(20) NOT NULL ,
+    status ENUM('PENDING', 'PROCESSING', 'COMPLETED', 'REJECTED') DEFAULT 'PENDING' NOT NULL ,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_target_id (target_id),
+    INDEX idx_author (author),
+    INDEX idx_type (type),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at),
+    INDEX idx_updated_at (updated_at)
+);

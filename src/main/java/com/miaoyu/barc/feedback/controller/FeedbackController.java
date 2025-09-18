@@ -7,6 +7,7 @@ import com.miaoyu.barc.feedback.model.FeedbackFormModel;
 import com.miaoyu.barc.feedback.service.FeedbackService;
 import com.miaoyu.barc.response.ResourceR;
 import com.miaoyu.barc.utils.J;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,10 +40,23 @@ public class FeedbackController {
      * @return List类型中包含指定数量符合条件的Feedback实体*/
     @GetMapping("/feedbacks_by_type")
     public ResponseEntity<J> getFeedbacksByTypeControl(
+            HttpServletRequest request,
             @RequestParam(value = "count", required = false) Integer count,
             @RequestParam("type") FeedbackTypeEnum typeEnum
     ) {
-        return null;
+        return feedbackService.getFeedbacksByTypeService(request.getAttribute("uuid").toString(), typeEnum);
+    }
+
+    /**根据Feedback的ID获取唯一符合要求的Feedback实体
+     * @param request 管理员登录信息
+     * @param feedbackId Feedback的ID
+     * @return 唯一符合条件的Feedback实体*/
+    @GetMapping("/only")
+    public ResponseEntity<J> getFeedbackOnlyControl(
+            HttpServletRequest request,
+            @RequestParam("feedback_id") String feedbackId
+    ) {
+        return feedbackService.getFeedbackOnlyService(request.getAttribute("uuid").toString(), feedbackId);
     }
 
     /**上传投诉表单
@@ -52,5 +66,16 @@ public class FeedbackController {
     @PostMapping("/upload")
     public ResponseEntity<J> uploadFeedbackControl(@RequestBody FeedbackFormModel requestModel) {
         return feedbackService.uploadFeedbackService(requestModel);
+    }
+
+    /**修改投诉表单
+     * @param request 管理员登录信息
+     * @param requestModel Feedback实体
+     * @return 修改是否成功*/
+    @PutMapping("/update")
+    public ResponseEntity<J> updateFeedbackControl(
+            HttpServletRequest request,
+            @RequestBody FeedbackFormModel requestModel) {
+        return feedbackService.updateFeedbackService(request.getAttribute("uuid").toString(), requestModel);
     }
 }

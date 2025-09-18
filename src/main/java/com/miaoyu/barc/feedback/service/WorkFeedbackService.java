@@ -54,31 +54,31 @@ public class WorkFeedbackService {
         return ResponseEntity.ok(new ChangeR().udu(false, 1));
     }
 
-    public ResponseEntity<J> updateWorkFeedbackService(String uuid, WorkFeedbackModel requestModel) {
-        if (userArchiveMapper.selectByUuid(uuid).getPermission() < PermissionConst.SEC_MAINTAINER) {
-            return ResponseEntity.ok(new UserR().insufficientAccountPermission());
-        }
-        WorkFeedbackModel workFeedbackDB = workFeedbackMapper.selectById(requestModel.getId());
-        if (Objects.isNull(workFeedbackDB) || workFeedbackDB.getStatus()) {
-            return ResponseEntity.ok(new FeedbackR().notFoundOrCompleted());
-        }
-        WorkModel work = workMapper.selectById(requestModel.getWork_id());
-        if (Objects.isNull(work)) {
-            return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
-        }
-        boolean b = workFeedbackMapper.update(requestModel.getId(), requestModel.getNote());
-        if (b) {
-            UserBasicModel workAuthorBasic = userBasicMapper.selectByUuid(work.getIs_claim() ? work.getAuthor() : work.getUploader());
-            if (!Objects.isNull(workAuthorBasic)) {
-                sendEmailUtils.customEmail(workAuthorBasic.getEmail(),
-                        "作品被投诉并已完成处理",
-                        "您在蔚蓝收录馆中收录的作品：《" + work.getTitle() + "》被投诉了，并已完成处理，处理反馈：" + requestModel.getNote());
-            }
-            sendEmailUtils.customEmail(workFeedbackDB.getEmail(),
-                    "投诉反馈已处理完成",
-                    "您对蔚蓝收录馆中收录作品：《" + work.getTitle() + "》的投诉反馈已经完成了处理，处理反馈：" + requestModel.getNote());
-            return ResponseEntity.ok(new ChangeR().udu(true, 3));
-        }
-        return ResponseEntity.ok(new ChangeR().udu(false, 3));
-    }
+//    public ResponseEntity<J> updateWorkFeedbackService(String uuid, WorkFeedbackModel requestModel) {
+//        if (userArchiveMapper.selectByUuid(uuid).getPermission() < PermissionConst.SEC_MAINTAINER) {
+//            return ResponseEntity.ok(new UserR().insufficientAccountPermission());
+//        }
+//        WorkFeedbackModel workFeedbackDB = workFeedbackMapper.selectById(requestModel.getId());
+//        if (Objects.isNull(workFeedbackDB) || workFeedbackDB.getStatus()) {
+//            return ResponseEntity.ok(new FeedbackR().notFoundOrCompleted());
+//        }
+//        WorkModel work = workMapper.selectById(requestModel.getWork_id());
+//        if (Objects.isNull(work)) {
+//            return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+//        }
+//        boolean b = workFeedbackMapper.update(requestModel.getId(), requestModel.getNote());
+//        if (b) {
+//            UserBasicModel workAuthorBasic = userBasicMapper.selectByUuid(work.getIs_claim() ? work.getAuthor() : work.getUploader());
+//            if (!Objects.isNull(workAuthorBasic)) {
+//                sendEmailUtils.customEmail(workAuthorBasic.getEmail(),
+//                        "作品被投诉并已完成处理",
+//                        "您在蔚蓝收录馆中收录的作品：《" + work.getTitle() + "》被投诉了，并已完成处理，处理反馈：" + requestModel.getNote());
+//            }
+//            sendEmailUtils.customEmail(workFeedbackDB.getEmail(),
+//                    "投诉反馈已处理完成",
+//                    "您对蔚蓝收录馆中收录作品：《" + work.getTitle() + "》的投诉反馈已经完成了处理，处理反馈：" + requestModel.getNote());
+//            return ResponseEntity.ok(new ChangeR().udu(true, 3));
+//        }
+//        return ResponseEntity.ok(new ChangeR().udu(false, 3));
+//    }
 }
