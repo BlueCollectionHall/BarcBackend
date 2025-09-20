@@ -21,4 +21,5 @@ public class AppService {
     public String getPwdKey(){
         return appConfig.getPasswordKey();
     }
+    public String getVersion() {return appConfig.getVersion();}
 }
