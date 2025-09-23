@@ -41,12 +41,16 @@ public class FeedbackService {
     private ComparePermission comparePermission;
 
     @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check(isSuchElseRequire = false, identity = UserIdentityEnum.MANAGER)})
-    public ResponseEntity<J> getFeedbacksByTypeService(String managerUuid, FeedbackTypeEnum typeEnum) {
+    public ResponseEntity<J> getFeedbacksByTypeWithManagerService(String managerUuid, FeedbackTypeEnum typeEnum) {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, feedbackMapper.selectByType(typeEnum)));
+    }
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
+    public ResponseEntity<J> getFeedbacksByTypeWithMeService(String uuid, FeedbackTypeEnum typeEnum) {
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, feedbackMapper.selectByTypeAndAuthor(typeEnum, uuid)));
     }
 
     @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check(isSuchElseRequire = false, identity = UserIdentityEnum.MANAGER)})
-    public ResponseEntity<J> getFeedbackOnlyService(String managerUuid, String feedbackId) {
+    public ResponseEntity<J> getFeedbackOnlyWithManagerService(String managerUuid, String feedbackId) {
         FeedbackFormModel feedback = feedbackMapper.selectById(feedbackId);
         if (feedback == null) {
             return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
@@ -56,6 +60,18 @@ public class FeedbackService {
             feedbackMapper.update(feedback);
         }
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, feedback));
+    }
+
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
+    public ResponseEntity<J> getFeedbackOnlyWithMeService(String uuid, String feedbackId) {
+        FeedbackFormModel feedback = feedbackMapper.selectById(feedbackId);
+        if (feedback == null) {
+            return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        }
+        if (feedback.getAuthor().equals(uuid)) {
+            return ResponseEntity.ok(new ResourceR().resourceSuch(true, feedback));
+        }
+        return ResponseEntity.ok(new UserR().insufficientAccountPermission());
     }
 
     public ResponseEntity<J> uploadFeedbackService(FeedbackFormModel requestModel) {
@@ -93,6 +109,11 @@ public class FeedbackService {
                     isSent = sendEmailUtils.customEmail(requestModel.getEmail(),
                             "投诉反馈已收到",
                             "您对B.A.R.C.中用户：【" + userArchive.getNickname() + "】的投诉反馈文件，已经送达风纪委员会，处理结果会以电子邮箱的方式通知给您！您也可在[个人中心 -> 内容管理 -> 投诉反馈]中查看进度。");
+                    break;
+                } case COMMENT, MESSAGE_BOARD: {
+                    isSent = sendEmailUtils.customEmail(requestModel.getEmail(),
+                            "投诉反馈已收到",
+                            "您对B.A.R.C.中指定评论、留言、消息的投诉反馈文件，已经送达风纪委员会，处理结果会以电子邮箱的方式通知给您！您也可在[个人中心 -> 内容管理 -> 投诉反馈]中查看进度。");
                     break;
                 } default: {
                     isSent = sendEmailUtils.customEmail(requestModel.getEmail(),
@@ -135,6 +156,14 @@ public class FeedbackService {
                 yield ResponseEntity.ok(new UserR().insufficientAccountPermission());
             }
         };
+    }
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check(isSuchElseRequire = false, identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.ADMINISTRATOR)})
+    public ResponseEntity<J> deleteFeedbackService(String managerUuid, String feedbackId) {
+        boolean delete = feedbackMapper.delete(feedbackId);
+        if (delete) {
+            return ResponseEntity.ok(new ChangeR().udu(true, 1));
+        }
+        return ResponseEntity.ok(new ChangeR().udu(false, 1));
     }
 
 

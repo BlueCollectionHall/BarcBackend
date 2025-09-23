@@ -246,3 +246,24 @@ CREATE TABLE IF NOT EXISTS feedback(
     INDEX idx_created_at (created_at),
     INDEX idx_updated_at (updated_at)
 );
+CREATE TABLE IF NOT EXISTS trend(
+    id VARCHAR(36) PRIMARY KEY NOT NULL ,
+    title VARCHAR(255) NOT NULL ,
+    content TEXT NOT NULL ,
+    author VARCHAR(32) NOT NULL ,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_author (author),
+    INDEX idx_created_at (created_at),
+    INDEX idx_updated_at (updated_at)
+);
+CREATE TABLE IF NOT EXISTS trend_image(
+    id VARCHAR(36) PRIMARY KEY NOT NULL ,
+    trend_id VARCHAR(36) NOT NULL ,
+    sort INT NOT NULL DEFAULT 0,
+    image_url VARCHAR(255) NOT NULL ,
+    image_name VARCHAR(255) NOT NULL ,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_trend_id (trend_id),
+    FOREIGN KEY (trend_id) REFERENCES trend(id) ON DELETE CASCADE
+);

@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/work")
@@ -138,7 +139,8 @@ public class WorkController {
     @PostMapping("/upload")
     public ResponseEntity<J> uploadWorkControl(
             HttpServletRequest request,
-            @RequestBody WorkModel requestModel
+            @RequestBody WorkModel requestModel,
+            @RequestBody(required = false) MultipartFile[] files
             ) {
         return workService.uploadWorkService(request.getAttribute("uuid").toString(), requestModel);
     }

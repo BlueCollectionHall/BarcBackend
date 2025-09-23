@@ -28,6 +28,6 @@ public class InfoController {
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         String year = sdf.format(date);
-        return ResponseEntity.ok(new SuccessR().normal("B.A.R.C &copy; " +(basicYear.equals(year)? year: basicYear + "-" + year) + " Created by SpringBoot Ver." + appService.getVersion()));
+        return ResponseEntity.ok(new SuccessR().normal("B.A.R.C © " +(basicYear.equals(year)? year: basicYear + "-" + year) + " Created by SpringBoot Ver." + appService.getVersion()));
     }
 }

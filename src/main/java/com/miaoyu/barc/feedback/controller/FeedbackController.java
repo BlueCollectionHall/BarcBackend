@@ -35,28 +35,46 @@ public class FeedbackController {
     }
 
     /**根据类型获取全部投诉反馈信息
+     * @param request 用户登录信息
      * @param count 获取数量，0为全部
      * @param typeEnum 类型
+     * @param isManager 是否是管理员请求接口
      * @return List类型中包含指定数量符合条件的Feedback实体*/
     @GetMapping("/feedbacks_by_type")
     public ResponseEntity<J> getFeedbacksByTypeControl(
             HttpServletRequest request,
             @RequestParam(value = "count", required = false) Integer count,
-            @RequestParam("type") FeedbackTypeEnum typeEnum
+            @RequestParam("type") FeedbackTypeEnum typeEnum,
+            @RequestParam("is_manager") Boolean isManager
     ) {
-        return feedbackService.getFeedbacksByTypeService(request.getAttribute("uuid").toString(), typeEnum);
+        if (isManager) {
+            return feedbackService.getFeedbacksByTypeWithManagerService(request.getAttribute("uuid").toString(), typeEnum);
+        }
+        return feedbackService.getFeedbacksByTypeWithMeService(request.getAttribute("uuid").toString(), typeEnum);
     }
 
-    /**根据Feedback的ID获取唯一符合要求的Feedback实体
+    /**根据Feedback的ID获取唯一符合要求的Feedback实体（管理员用）
      * @param request 管理员登录信息
      * @param feedbackId Feedback的ID
      * @return 唯一符合条件的Feedback实体*/
-    @GetMapping("/only")
-    public ResponseEntity<J> getFeedbackOnlyControl(
+    @GetMapping("/only_with_manager")
+    public ResponseEntity<J> getFeedbackOnlyWithManagerControl(
             HttpServletRequest request,
             @RequestParam("feedback_id") String feedbackId
     ) {
-        return feedbackService.getFeedbackOnlyService(request.getAttribute("uuid").toString(), feedbackId);
+        return feedbackService.getFeedbackOnlyWithManagerService(request.getAttribute("uuid").toString(), feedbackId);
+    }
+
+    /**根据Feedback的ID获取唯一符合要求的Feedback实体（个人用）
+     * @param request 管理员登录信息
+     * @param feedbackId Feedback的ID
+     * @return 唯一符合条件的Feedback实体*/
+    @GetMapping("/only_with_me")
+    public ResponseEntity<J> getFeedbackOnlyWithMeControl(
+            HttpServletRequest request,
+            @RequestParam("feedback_id") String feedbackId
+    ) {
+        return feedbackService.getFeedbackOnlyWithMeService(request.getAttribute("uuid").toString(), feedbackId);
     }
 
     /**上传投诉表单
@@ -77,5 +95,17 @@ public class FeedbackController {
             HttpServletRequest request,
             @RequestBody FeedbackFormModel requestModel) {
         return feedbackService.updateFeedbackService(request.getAttribute("uuid").toString(), requestModel);
+    }
+
+    /**删除投诉表单
+     * @param request 管理员登录信息
+     * @param feedbackId Feedback的ID
+     * @return 删除是否成功*/
+    @DeleteMapping("/delete")
+    public ResponseEntity<J> deleteFeedbackControl(
+            HttpServletRequest request,
+            @RequestParam("feedback_id") String feedbackId
+    ) {
+         return feedbackService.deleteFeedbackService(request.getAttribute("uuid").toString(), feedbackId);
     }
 }
