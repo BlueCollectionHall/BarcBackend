@@ -8,6 +8,7 @@ import com.miaoyu.barc.api.work.service.WorkService;
 import com.miaoyu.barc.utils.J;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -136,13 +137,14 @@ public class WorkController {
     /**上传作品
      * @param requestModel 作品的实体
      * @return 上传是否成功*/
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<J> uploadWorkControl(
             HttpServletRequest request,
-            @RequestBody WorkModel requestModel,
-            @RequestBody(required = false) MultipartFile[] files
+            @RequestPart("form") WorkModel requestModel,
+            @RequestPart(value = "files", required = false) MultipartFile[] files
             ) {
-        return workService.uploadWorkService(request.getAttribute("uuid").toString(), requestModel);
+        if (files == null || files.length == 0) files = new MultipartFile[0];
+        return workService.uploadWorkService(request.getAttribute("uuid").toString(), requestModel, files);
     }
     /**修改作品（兼容维护者及以上维护性修改）
      * @param requestModel 作品的实体

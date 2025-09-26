@@ -1,9 +1,13 @@
 package com.miaoyu.barc.api.work.service;
 
+import com.miaoyu.barc.annotation.RequireSelfOrPermissionAnno;
+import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.api.mapper.StudentMapper;
 import com.miaoyu.barc.api.model.StudentModel;
 import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
+import com.miaoyu.barc.api.work.mapper.WorkImageMapper;
 import com.miaoyu.barc.api.work.mapper.WorkMapper;
+import com.miaoyu.barc.api.work.model.WorkImageModel;
 import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.model.entity.WorkEntity;
 import com.miaoyu.barc.permission.ComparePermission;
@@ -12,13 +16,17 @@ import com.miaoyu.barc.response.ChangeR;
 import com.miaoyu.barc.response.ErrorR;
 import com.miaoyu.barc.response.ResourceR;
 import com.miaoyu.barc.response.UserR;
+import com.miaoyu.barc.user.enumeration.UserIdentityEnum;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
 import com.miaoyu.barc.user.model.UserArchiveModel;
 import com.miaoyu.barc.utils.GenerateUUID;
 import com.miaoyu.barc.utils.J;
+import com.miaoyu.barc.utils.minio.MinioObjects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +39,10 @@ public class WorkService {
     private UserArchiveMapper userArchiveMapper;
     @Autowired
     private StudentMapper studentMapper;
+    @Autowired
+    private MinioObjects minioObjects;
+    @Autowired
+    private WorkImageMapper workImageMapper;
 
     public ResponseEntity<J> getNewWorkService(int day, boolean isStudentList) {
         List<WorkEntity> works = workMapper.selectByDay(day, WorkStatusEnum.PUBLIC);
@@ -96,54 +108,56 @@ public class WorkService {
         }
         return ResponseEntity.ok(new UserR().uuidMismatch());
     }
-    public ResponseEntity<J> uploadWorkService(String uuid, WorkModel requestModel) {
-        UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
-        if (Objects.isNull(userArchive)) {
-            return ResponseEntity.ok(new UserR().noSuchUser());
+    @Transactional
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
+    public ResponseEntity<J> uploadWorkService(String uuid, WorkModel requestModel, MultipartFile[] files) {
+        WorkModel tempWork;
+        // 不存在ID，需要自动生成ID
+        if (requestModel.getId() == null || requestModel.getId().isEmpty()) {
+            do {
+                requestModel.setId(new GenerateUUID().getUuid36l());
+                tempWork = workMapper.selectById(requestModel.getId());
+            } while (tempWork != null);
         }
-        if (Objects.isNull(requestModel.getId())) {
-            requestModel.setId(new GenerateUUID().getUuid36l());
-        } else {
-            if (!Objects.isNull(workMapper.selectById(requestModel.getId()))) {
-                return ResponseEntity.ok(new ErrorR().normal("作品ID已经被占用！"));
-            }
-        }
-        // 未被认领
-        if (!requestModel.getIs_claim()) {
-            if (Objects.isNull(requestModel.getAuthor_nickname())) {
-                return ResponseEntity.ok(new ErrorR().normal("您需要标明作品来源作者在其他平台的常用昵称！"));
-            }
-            if (Objects.isNull(requestModel.getUploader())) {
-                return ResponseEntity.ok(new ErrorR().normal("待认领的作品必须填写上传者的UUID信息"));
-            }
-            if (!Objects.equals(requestModel.getUploader(), uuid)) {
-                return ResponseEntity.ok(new ErrorR().normal("上传者UUID与已登录账号不一致"));
-            }
-            requestModel.setAuthor("707B0FBF6AAA35B788069B07AEFEA12B");
-        }
-        // 本人作品
+        // 存在用户自定义的ID
         else {
-            if (!requestModel.getAuthor().equals(uuid)) {
-                return ResponseEntity.ok(new ErrorR().normal("作者UUID与已登录账号不一致"));
-            }
+            tempWork = workMapper.selectById(requestModel.getId());
+            if (tempWork != null) return ResponseEntity.ok(new ErrorR().normal("您的自定义ID号已经冲突！"));
+        }
+        // 作品是号主自有
+        if (requestModel.getIs_claim()) requestModel.setAuthor(uuid);
+        // 作品是搬运收录
+        else {
+            if (requestModel.getAuthor_nickname() == null)
+                return ResponseEntity.ok(new ErrorR().normal("搬运收录的作品，请标注该作品作者在其他平台常用昵称！"));
+            requestModel.setUploader(uuid);
+            requestModel.setAuthor("707B0FBF6AAA35B788069B07AEFEA12B");
         }
         boolean insert = workMapper.insert(requestModel);
         if (insert) {
-            return ResponseEntity.ok(new ChangeR().udu(true, 1));
+            try {
+                for (int i = 0; i < files.length; i++) {
+                    MultipartFile file = files[i];
+                    String finalFileName = requestModel.getId() + "_" + file.getOriginalFilename();
+                    WorkImageModel workImage = new WorkImageModel();
+                    workImage.setId(new GenerateUUID().getUuid36l());
+                    workImage.setSort(i);
+                    workImage.setWork_id(requestModel.getId());
+                    workImage.setImage_name(file.getOriginalFilename());
+                    String imageUrl = minioObjects.putObject("barctemp", "uploads/" + finalFileName, file);
+                    if (imageUrl == null) continue;
+                    workImage.setImage_url(imageUrl);
+                    workImageMapper.insert(workImage);
+                    return ResponseEntity.ok(new ChangeR().udu(true, 1));
+                }
+            } catch (Exception e) {
+                return ResponseEntity.ok(new ChangeR().udu(false, 1));
+            }
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 1));
     }
+    @RequireSelfOrPermissionAnno(identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.SEC_MAINTAINER, isHasElseUpper = true)
     public ResponseEntity<J> updateWorkService(String uuid, WorkModel requestModel) {
-        UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
-        if (Objects.isNull(userArchive)) {
-            return ResponseEntity.ok(new UserR().noSuchUser());
-        }
-        if (!uuid.equals(requestModel.getAuthor())) {
-            boolean compare = new ComparePermission().compare(userArchive.getPermission(), PermissionConst.FIR_MAINTAINER);
-            if (!compare) {
-                return ResponseEntity.ok(new UserR().insufficientAccountPermission());
-            }
-        }
         boolean b = workMapper.update(requestModel);
         if (b) {
             return ResponseEntity.ok(new ChangeR().udu(true, 3));
