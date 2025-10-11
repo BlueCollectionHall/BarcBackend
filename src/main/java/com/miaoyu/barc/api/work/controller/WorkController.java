@@ -1,5 +1,6 @@
 package com.miaoyu.barc.api.work.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.miaoyu.barc.annotation.IgnoreAuth;
 import com.miaoyu.barc.annotation.SuchWorkAnno;
 import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
@@ -135,16 +136,18 @@ public class WorkController {
         return workService.getWorkByIdWithMeService(request.getAttribute("uuid").toString(), workId);
     }
     /**上传作品
-     * @param requestModel 作品的实体
      * @return 上传是否成功*/
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<J> uploadWorkControl(
             HttpServletRequest request,
-            @RequestPart("form") WorkModel requestModel,
+            @RequestParam("form") String formJson,
+            @RequestPart("cover_image") MultipartFile coverImage,
             @RequestPart(value = "files", required = false) MultipartFile[] files
-            ) {
+            ) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        WorkModel requestModel = objectMapper.readValue(formJson, WorkModel.class);
         if (files == null || files.length == 0) files = new MultipartFile[0];
-        return workService.uploadWorkService(request.getAttribute("uuid").toString(), requestModel, files);
+        return workService.uploadWorkService(request.getAttribute("uuid").toString(), requestModel, coverImage, files);
     }
     /**修改作品（兼容维护者及以上维护性修改）
      * @param requestModel 作品的实体
@@ -164,6 +167,6 @@ public class WorkController {
     @DeleteMapping("/delete")
     @SuchWorkAnno(selectType = "id", index = 0)
     public ResponseEntity<J> deleteWorkControl(@RequestParam("work_id") String workId) {
-        return null;
+        return workService.deleteWorkService(workId);
     }
 }

@@ -5,8 +5,10 @@ import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.api.mapper.StudentMapper;
 import com.miaoyu.barc.api.model.StudentModel;
 import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
+import com.miaoyu.barc.api.work.mapper.WorkCoverImageMapper;
 import com.miaoyu.barc.api.work.mapper.WorkImageMapper;
 import com.miaoyu.barc.api.work.mapper.WorkMapper;
+import com.miaoyu.barc.api.work.model.WorkCoverImageModel;
 import com.miaoyu.barc.api.work.model.WorkImageModel;
 import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.model.entity.WorkEntity;
@@ -43,6 +45,8 @@ public class WorkService {
     private MinioObjects minioObjects;
     @Autowired
     private WorkImageMapper workImageMapper;
+    @Autowired
+    private WorkCoverImageMapper workCoverImageMapper;
 
     public ResponseEntity<J> getNewWorkService(int day, boolean isStudentList) {
         List<WorkEntity> works = workMapper.selectByDay(day, WorkStatusEnum.PUBLIC);
@@ -110,7 +114,7 @@ public class WorkService {
     }
     @Transactional
     @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
-    public ResponseEntity<J> uploadWorkService(String uuid, WorkModel requestModel, MultipartFile[] files) {
+    public ResponseEntity<J> uploadWorkService(String uuid, WorkModel requestModel, MultipartFile coverImage, MultipartFile[] files) {
         WorkModel tempWork;
         // 不存在ID，需要自动生成ID
         if (requestModel.getId() == null || requestModel.getId().isEmpty()) {
@@ -133,9 +137,25 @@ public class WorkService {
             requestModel.setUploader(uuid);
             requestModel.setAuthor("707B0FBF6AAA35B788069B07AEFEA12B");
         }
+        requestModel.setBanner_image("");
+        requestModel.setCover_image("");
         boolean insert = workMapper.insert(requestModel);
         if (insert) {
             try {
+                // 写入封面图
+                String coverImageName = requestModel.getId() + "_" + coverImage.getName();
+                WorkCoverImageModel coverImageModel = new WorkCoverImageModel();
+                coverImageModel.setId(new GenerateUUID().getUuid36l());
+                coverImageModel.setWork_id(requestModel.getId());
+                coverImageModel.setImage_name(coverImageName);
+                String coverImageUrl = minioObjects.putObject("barctemp", "uploads/cover_" + coverImageName, coverImage);
+                if (coverImageUrl == null) return ResponseEntity.ok(new ErrorR().normal("封面图上传失败！"));
+                coverImageModel.setImage_url(coverImageUrl);
+                requestModel.setCover_image(coverImageUrl);
+                requestModel.setBanner_image(coverImageUrl);
+                workMapper.update(requestModel);
+                workCoverImageMapper.insert(coverImageModel);
+                // 写入其他图片
                 for (int i = 0; i < files.length; i++) {
                     MultipartFile file = files[i];
                     String finalFileName = requestModel.getId() + "_" + file.getOriginalFilename();
@@ -143,13 +163,13 @@ public class WorkService {
                     workImage.setId(new GenerateUUID().getUuid36l());
                     workImage.setSort(i);
                     workImage.setWork_id(requestModel.getId());
-                    workImage.setImage_name(file.getOriginalFilename());
+                    workImage.setImage_name(finalFileName);
                     String imageUrl = minioObjects.putObject("barctemp", "uploads/" + finalFileName, file);
                     if (imageUrl == null) continue;
                     workImage.setImage_url(imageUrl);
                     workImageMapper.insert(workImage);
-                    return ResponseEntity.ok(new ChangeR().udu(true, 1));
                 }
+                return ResponseEntity.ok(new ChangeR().udu(true, 1));
             } catch (Exception e) {
                 return ResponseEntity.ok(new ChangeR().udu(false, 1));
             }
@@ -165,7 +185,15 @@ public class WorkService {
         return ResponseEntity.ok(new ChangeR().udu(false, 3));
     }
 
-    public ResponseEntity<J> delectWorkService(String workId) {
+    public ResponseEntity<J> deleteWorkService(String workId) {
+        List<WorkImageModel> workImages = workImageMapper.selectByWorkId(workId);
+        for (WorkImageModel workImage : workImages) {
+            minioObjects.deleteObject("barctemp", "uploads/" + workImage.getImage_name());
+            workImageMapper.delete(workImage.getId());
+        }
+        WorkCoverImageModel coverImage = workCoverImageMapper.selectByWorkId(workId);
+        minioObjects.deleteObject("barctemp", "uploads/cover_" + coverImage.getImage_name());
+        workCoverImageMapper.deleteByWorkId(workId);
         boolean delete = workMapper.delete(workId);
         if (delete) {
             return ResponseEntity.ok(new ChangeR().udu(true, 2));

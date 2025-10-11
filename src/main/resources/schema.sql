@@ -198,6 +198,15 @@ CREATE TABLE IF NOT EXISTS work_image(
     INDEX idx_work_id (work_id),
     FOREIGN KEY (work_id) REFERENCES work(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS work_cover_image(
+     id VARCHAR(36) PRIMARY KEY NOT NULL ,
+     work_id VARCHAR(36) UNIQUE KEY NOT NULL ,
+     image_url VARCHAR(255) NOT NULL ,
+     image_name VARCHAR(255) NOT NULL ,
+     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     INDEX idx_work_id (work_id),
+     FOREIGN KEY (work_id) REFERENCES work(id) ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS message_board(
     id VARCHAR(36) PRIMARY KEY NOT NULL ,
     author VARCHAR(32) NOT NULL ,

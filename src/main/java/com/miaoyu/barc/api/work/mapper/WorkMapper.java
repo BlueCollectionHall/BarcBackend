@@ -40,8 +40,8 @@ public interface WorkMapper {
     @Select("SELECT * FROM work WHERE id = #{work_id}")
     WorkModel selectById(@Param("work_id") String workId);
     @Insert("INSERT INTO work " +
-            "(id, title, description, content, banner_image, cover_image, author, author_nickname, uploader, student) VALUES " +
-            "(#{id}, #{title}, #{description}, #{content}, #{banner_image}, #{cover_image}, #{author}, #{author_nickname}, #{uploader}, #{student})")
+            "(id, title, description, content, banner_image, cover_image, author, author_nickname, uploader, is_claim, status, student) VALUES " +
+            "(#{id}, #{title}, #{description}, #{content}, #{banner_image}, #{cover_image}, #{author}, #{author_nickname}, #{uploader}, #{is_claim}, 'PUBLIC', #{student})")
     boolean insert(WorkModel workModel);
     @Update("UPDATE work SET title = #{title}, description = #{description}, content = #{content}, banner_image = #{banner_image}, cover_image = #{cover_image}, author = #{author}, author_nickname = #{author_nickname}, uploader = #{uploader}, is_claim = #{is_claim}, student = #{student} WHERE id = #{id}")
     boolean update(WorkModel workModel);
