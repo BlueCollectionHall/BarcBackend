@@ -43,6 +43,15 @@ public class StudentController {
         return studentService.getStudentsByClubIdService(clubId);
     }
 
+    /**根据关键词获取符合条件的所有student实体
+     * @param keyword 关键词
+     * @return List类型中包含所有符合条件的student实体*/
+    @IgnoreAuth
+    @GetMapping("/students_by_keyword")
+    public ResponseEntity<J> getStudentsByKeywordControl(@RequestParam("keyword") String keyword) {
+        return studentService.getStudentsByKeywordService(keyword);
+    }
+
     /**根据student_id获取唯一符合的student实体
      * @param studentId student的id
      * @return 唯一的student实体*/
