@@ -8,6 +8,8 @@ import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.service.WorkService;
 import com.miaoyu.barc.utils.J;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -137,6 +139,7 @@ public class WorkController {
     }
     /**上传作品
      * @return 上传是否成功*/
+
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<J> uploadWorkControl(
             HttpServletRequest request,

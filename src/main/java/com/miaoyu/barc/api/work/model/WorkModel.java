@@ -1,5 +1,6 @@
 package com.miaoyu.barc.api.work.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,6 @@ public class WorkModel {
     private Boolean is_claim;
     private WorkStatusEnum status;
     private String student;
-    private LocalDateTime create_at;
-    private LocalDateTime update_at;
-
+    private String created_at;
+    private String updated_at;
 }
