@@ -20,6 +20,6 @@ public class WorkEntity {
     private Boolean is_claim;
     private WorkStatusEnum status;
     private String student;
-    private LocalDateTime create_at;
-    private LocalDateTime update_at;
+    private LocalDateTime created_at;
+    private LocalDateTime updated_at;
 }
