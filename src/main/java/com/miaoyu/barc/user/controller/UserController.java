@@ -69,12 +69,13 @@ public class UserController {
      * @return 重置是否成功*/
     @GetMapping("/reset_password")
     public ResponseEntity<J> resetPasswordControl(
+            HttpServletRequest request,
             @RequestParam("email") String email,
             @RequestParam("unique_id") String uniqueId,
             @RequestParam("code") String code,
             @RequestParam("password") String password
     ) {
-        return userService.resetPasswordService(uniqueId, code, email, password);
+        return userService.resetPasswordService(request.getAttribute("uuid").toString(), uniqueId, code, email, password);
     }
 
 }

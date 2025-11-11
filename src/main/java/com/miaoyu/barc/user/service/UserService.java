@@ -81,7 +81,8 @@ public class UserService {
         return ResponseEntity.ok(new ChangeR().udu(false, 3));
     }
 
-    public ResponseEntity<J> resetPasswordService(String uniqueId, String code, String email, String password) {
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
+    public ResponseEntity<J> resetPasswordService(String uuid, String uniqueId, String code, String email, String password) {
         VerificationCodeModel vcDB = verificationCodeMapper.selectByUniqueId(uniqueId);
         if (Objects.isNull(vcDB)) {
             return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
@@ -97,7 +98,7 @@ public class UserService {
             return ResponseEntity.ok(new ErrorR().normal("密码重置失败！"));
         }
         verificationCodeMapper.updateUsed(uniqueId);
-        boolean b = userBasicMapper.updatePassword(uniqueId, password);
+        boolean b = userBasicMapper.updatePassword(uuid, s);
         if (b) {
             return ResponseEntity.ok(new ChangeR().udu(true, 3));
         }

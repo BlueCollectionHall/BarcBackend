@@ -12,7 +12,7 @@ public interface UserBasicMapper {
     @Update("UPDATE user_basic SET username = #{username}, email = #{email}, telephone = #{telephone} WHERE uuid = #{uuid}")
     boolean update(UserBasicModel request);
     @Update("UPDATE user_basic SET password = #{password} WHERE uuid = #{uuid}")
-    boolean updatePassword(@Param("password") String password, @Param("uuid") String uuid);
+    boolean updatePassword(@Param("uuid") String uuid, @Param("password") String password);
     @Select("SELECT * FROM user_basic WHERE uuid = #{uuid}")
     UserBasicModel selectByUuid(@Param("uuid") String uuid);
     @Select("SELECT * FROM user_basic WHERE username = #{username}")
