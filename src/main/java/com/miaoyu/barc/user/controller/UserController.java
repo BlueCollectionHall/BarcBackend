@@ -12,6 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 用户信息查询（单个）
+ * 用户信息修改
+ * */
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
