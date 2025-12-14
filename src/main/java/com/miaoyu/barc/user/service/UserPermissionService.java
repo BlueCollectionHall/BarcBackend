@@ -1,5 +1,6 @@
 package com.miaoyu.barc.user.service;
 
+import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.email.utils.SendEmailUtils;
 import com.miaoyu.barc.permission.PermissionConst;
 import com.miaoyu.barc.response.ChangeR;
@@ -58,24 +59,21 @@ public class UserPermissionService {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, permissionConst.toString(identity, permission)));
     }
 
+    @RequireUserAndPermissionAnno({
+            @RequireUserAndPermissionAnno.Check(identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.THI_MAINTAINER, isSuchElseRequire = false),
+            @RequireUserAndPermissionAnno.Check(uuidIndex = 1)
+    })
     public ResponseEntity<J> changeUserPermissionService(
             String operatorUUID, String uuid, UserIdentityEnum identity, Integer permission
     ) {
         UserArchiveModel opArchive = userArchiveMapper.selectByUuid(operatorUUID);
-        if (opArchive == null) {
-            return ResponseEntity.ok(new UserR().noSuchUser());
-        }
-        if (!opArchive.getIdentity().equals(UserIdentityEnum.MANAGER)) {
+        // 要修改的权限是管理员权限 并且 发起请求的管理员权限低于要修改的权限值
+        if (identity.equals(UserIdentityEnum.MANAGER) && opArchive.getPermission() <= permission) {
             return ResponseEntity.ok(new UserR().insufficientAccountPermission());
         }
         UserArchiveModel userArchive = userArchiveMapper.selectByUuid(uuid);
-        if (userArchive == null) {
-            return ResponseEntity.ok(new UserR().noSuchUser());
-        }
+        // 被修改用户也是管理员 并且 发起请求的管理员权限低于被修改用户的权限
         if (userArchive.getIdentity().equals(UserIdentityEnum.MANAGER) && opArchive.getPermission() <= userArchive.getPermission()) {
-            return ResponseEntity.ok(new UserR().insufficientAccountPermission());
-        }
-        if (Objects.equals(opArchive.getPermission(), permission)) {
             return ResponseEntity.ok(new UserR().insufficientAccountPermission());
         }
         userArchive.setPermission(permission);
