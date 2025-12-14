@@ -42,7 +42,7 @@ public interface UserArchiveMapper {
             "       AND a.identity = #{condition.identity}" +
             "   </if>" +
             "   <if test='condition.permission != null'>" +
-            "       AND a.permission = #{condition.permission}" +
+            "       AND (a.permission &amp; #{condition.permission}) = #{condition.permission}" +
             "   </if>" +
             "   <if test='condition.username != null and condition.username != \"\"'>" +
             "       AND b.username LIKE CONCAT('%', #{condition.username}, '%')" +
@@ -75,7 +75,7 @@ public interface UserArchiveMapper {
             "       AND a.identity = #{condition.identity}" +
             "   </if>" +
             "   <if test='condition.permission != null'>" +
-            "       AND a.permission = #{condition.permission}" +
+            "       AND (a.permission &amp; #{condition.permission}) = #{condition.permission}" +
             "   </if>" +
             "   <if test='condition.username != null and condition.username != \"\"'>" +
             "       AND b.username LIKE CONCAT('%', #{condition.username}, '%')" +
