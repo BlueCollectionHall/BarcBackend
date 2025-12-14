@@ -10,6 +10,13 @@ public class SignR {
         j.setData(j.getMsg());
         return j;
     }
+    public J usernameClash() {
+        J j = new J();
+        j.setCode(1);
+        j.setMsg("用户名已经存在");
+        j.setData(j.getMsg());
+        return j;
+    }
     public J signIn(boolean isSignIn) {
         J j = new J();
         j.setCode(isSignIn? 0: 1);

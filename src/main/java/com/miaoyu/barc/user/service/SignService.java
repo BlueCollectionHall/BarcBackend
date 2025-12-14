@@ -116,6 +116,9 @@ public class SignService {
         if (!userBasic.getEmail().equals(email)) {
             return ResponseEntity.ok(new ErrorR().normal("注册邮箱与验证邮箱不一致"));
         }
+        if (userBasicMapper.selectByUsername(userBasic.getUsername()) != null) {
+            return ResponseEntity.ok(new SignR().usernameClash());
+        }
         userBasic.setEmail_verified(true);
         String calcPwd = passwordHash.passwordHash256(userBasic.getPassword());
         if (Objects.isNull(calcPwd)) {
