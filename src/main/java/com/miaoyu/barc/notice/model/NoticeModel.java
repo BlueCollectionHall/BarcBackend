@@ -1,12 +1,10 @@
 package com.miaoyu.barc.notice.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 public class NoticeModel {
     private String id;
     private String title;

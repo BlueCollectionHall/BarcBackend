@@ -286,3 +286,15 @@ CREATE TABLE IF NOT EXISTS trend_image(
     INDEX idx_trend_id (trend_id),
     FOREIGN KEY (trend_id) REFERENCES trend(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS notice (
+    id VARCHAR(36) PRIMARY KEY NOT NULL ,
+    title VARCHAR(255) NOT NULL ,
+    content TEXT NOT NULL ,
+    author VARCHAR(32) NOT NULL ,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_id (id),
+    INDEX idx_author (author),
+    INDEX idx_created_at (created_at),
+    INDEX idx_updated_at (updated_at)
+);

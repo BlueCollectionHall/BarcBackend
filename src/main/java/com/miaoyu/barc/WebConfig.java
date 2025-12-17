@@ -36,6 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "/comment/**",
                 "/feedback/**",
                 "/trend/**",
+                "/notice/**"
         };
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns(stringArray);
