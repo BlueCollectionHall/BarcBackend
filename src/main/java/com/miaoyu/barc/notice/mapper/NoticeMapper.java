@@ -12,5 +12,7 @@ public interface NoticeMapper {
     List<NoticeModel> selectByPage(@Param("offset") Integer offset, @Param("pageSize") Integer pageSize, @Param("condition")Map<String, Object> condition);
     Long countByPage(@Param("condition")Map<String, Object> condition);
 
+    NoticeModel selectById(@Param("id") String noticeId);
+
     boolean insert(NoticeModel notice);
 }

@@ -53,6 +53,14 @@ public class NoticeService {
                                 totalPage)));
     }
 
+    public ResponseEntity<J> getNoticeOnlyService(String noticeId) {
+        NoticeModel model = noticeMapper.selectById(noticeId);
+        if (model == null) {
+            return ResponseEntity.ok(new ResourceR().resourceSuch(false, null));
+        }
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, model));
+    }
+
     @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check(isSuchElseRequire = false, identity = UserIdentityEnum.MANAGER)})
     public ResponseEntity<J> uploadNoticeService(String uuid, NoticeModel model) {
         model.setId(new GenerateUUID().getUuid36l());

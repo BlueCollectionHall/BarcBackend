@@ -39,6 +39,15 @@ public class NoticeController {
     }
 
     /**
+     * 获取唯一公告
+     * */
+    @IgnoreAuth
+    @GetMapping("/only")
+    public ResponseEntity<J> getNoticeOnlyControl(@RequestParam("notice_id") String noticeId) {
+        return noticeService.getNoticeOnlyService(noticeId);
+    }
+
+    /**
      * 上传新公告
      * @param model 公告实体
      * @return 上传成功/失败
