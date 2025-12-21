@@ -41,4 +41,8 @@
         INSERT INTO notice (id, title, content, author) VALUES (#{id}, #{title}, #{content}, #{author})
     </insert>
 
+    <delete id="deleteById" parameterType="com.miaoyu.barc.notice.model.NoticeModel">
+        DELETE FROM notice WHERE id = #{id}
+    </delete>
+
 </mapper>

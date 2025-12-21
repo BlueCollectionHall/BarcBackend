@@ -72,4 +72,17 @@ public class NoticeController {
     ) {
         return null;
     }
+
+    /**
+     * 删除公告（副馆长）
+     * @param noticeId 公告ID
+     * @return 删除成功/失败
+     * */
+    @DeleteMapping("/delete")
+    public ResponseEntity<J> deleteNoticeControl(
+            HttpServletRequest request,
+            @RequestParam("notice_id") String noticeId
+    ) {
+        return noticeService.deleteNoticeService(request.getAttribute("uuid").toString(), noticeId);
+    }
 }

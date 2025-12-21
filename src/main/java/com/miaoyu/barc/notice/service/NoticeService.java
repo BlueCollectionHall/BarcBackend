@@ -3,6 +3,7 @@ package com.miaoyu.barc.notice.service;
 import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.notice.mapper.NoticeMapper;
 import com.miaoyu.barc.notice.model.NoticeModel;
+import com.miaoyu.barc.permission.PermissionConst;
 import com.miaoyu.barc.response.ChangeR;
 import com.miaoyu.barc.response.ResourceR;
 import com.miaoyu.barc.response.SuccessR;
@@ -70,5 +71,15 @@ public class NoticeService {
             return ResponseEntity.ok(new ChangeR().udu(true, 1));
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 1));
+    }
+
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check(isSuchElseRequire = false, identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.THI_MAINTAINER)})
+    public ResponseEntity<J> deleteNoticeService(String uuid, String noticeId) {
+        try {
+            noticeMapper.deleteById(noticeId);
+        } catch (RuntimeException e) {
+            return ResponseEntity.ok(new ChangeR().udu(false, 2));
+        }
+        return ResponseEntity.ok(new ChangeR().udu(true, 2));
     }
 }
