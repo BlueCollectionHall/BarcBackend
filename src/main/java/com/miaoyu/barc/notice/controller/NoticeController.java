@@ -70,7 +70,7 @@ public class NoticeController {
             HttpServletRequest request,
             @RequestBody NoticeModel model
     ) {
-        return null;
+        return noticeService.updateNoticeService(request.getAttribute("uuid").toString(), model.getAuthor(), model);
     }
 
     /**

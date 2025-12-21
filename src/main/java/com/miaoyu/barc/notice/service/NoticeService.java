@@ -1,5 +1,6 @@
 package com.miaoyu.barc.notice.service;
 
+import com.miaoyu.barc.annotation.RequireSelfOrPermissionAnno;
 import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.notice.mapper.NoticeMapper;
 import com.miaoyu.barc.notice.model.NoticeModel;
@@ -13,6 +14,7 @@ import com.miaoyu.barc.utils.J;
 import com.miaoyu.barc.utils.dto.PageRequestDto;
 import com.miaoyu.barc.utils.dto.PageResultDto;
 import com.miaoyu.barc.utils.pojo.PageInitPojo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class NoticeService {
     @Autowired
@@ -73,11 +76,23 @@ public class NoticeService {
         return ResponseEntity.ok(new ChangeR().udu(false, 1));
     }
 
-    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check(isSuchElseRequire = false, identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.THI_MAINTAINER)})
+    @RequireSelfOrPermissionAnno(identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.ADMINISTRATOR)
+    public ResponseEntity<J> updateNoticeService(String uuid, String authorUuid, NoticeModel model) {
+        try {
+            noticeMapper.update(model);
+        } catch (RuntimeException e) {
+            log.error("修改公告失败{}", e.getMessage());
+            return ResponseEntity.ok(new ChangeR().udu(false, 3));
+        }
+        return ResponseEntity.ok(new ChangeR().udu(true, 3));
+    }
+
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check(isSuchElseRequire = false, identity = UserIdentityEnum.MANAGER, targetPermission = PermissionConst.ADMINISTRATOR)})
     public ResponseEntity<J> deleteNoticeService(String uuid, String noticeId) {
         try {
             noticeMapper.deleteById(noticeId);
         } catch (RuntimeException e) {
+            log.error("删除公告失败{}", e.getMessage());
             return ResponseEntity.ok(new ChangeR().udu(false, 2));
         }
         return ResponseEntity.ok(new ChangeR().udu(true, 2));

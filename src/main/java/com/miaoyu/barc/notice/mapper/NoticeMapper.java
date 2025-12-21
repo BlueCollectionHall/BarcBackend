@@ -16,5 +16,7 @@ public interface NoticeMapper {
 
     boolean insert(NoticeModel notice);
 
+    boolean update(NoticeModel notice);
+
     boolean deleteById(@Param("id") String noticeId);
 }
