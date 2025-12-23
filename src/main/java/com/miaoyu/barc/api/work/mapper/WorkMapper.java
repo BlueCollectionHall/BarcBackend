@@ -3,9 +3,11 @@ package com.miaoyu.barc.api.work.mapper;
 import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
 import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.model.entity.WorkEntity;
+import com.miaoyu.barc.utils.pojo.PageInitPojo;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface WorkMapper {
     @Select("SELECT * FROM work WHERE status = #{status}")
@@ -13,6 +15,16 @@ public interface WorkMapper {
 
     @Select("SELECT * FROM work WHERE updated_at >= DATE_SUB(now(), INTERVAL #{day} DAY) AND status = #{status}")
     List<WorkEntity> selectByDay(@Param("day") Integer day, @Param("status") WorkStatusEnum status);
+
+    List<WorkModel> selectByPage(
+            @Param("status") WorkStatusEnum statusEnum,
+            @Param("offset") Integer offset,
+            @Param("page_size") Integer pageSize,
+            @Param("condition") Map<String, Object> condition);
+
+    Long countByPage(
+            @Param("status") WorkStatusEnum statusEnum,
+            @Param("condition") Map<String, Object> condition);
 
     @Select("SELECT w.* FROM work w JOIN student stu ON w.student = stu.id WHERE stu.school = #{school_id} AND status = #{status}")
     List<WorkEntity> selectBySchoolId(@Param("school_id") String schoolId, @Param("status") WorkStatusEnum statusEnum);

@@ -7,9 +7,8 @@ import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
 import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.service.WorkService;
 import com.miaoyu.barc.utils.J;
+import com.miaoyu.barc.utils.dto.PageRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +41,20 @@ public class WorkController {
             @RequestParam("status") WorkStatusEnum statusEnum
     ) {
         return workService.getWorksAllService(statusEnum);
+    }
+    /**
+     * 分页获取符合条件的work实体
+     * @param statusEnum 作品状态
+     * @param pageRequestDto 分页信息以及检索条件
+     * @return Page分页信息中包含List类型Work简易信息实体
+     * */
+    @IgnoreAuth
+    @PostMapping("/works_by_page")
+    public ResponseEntity<J> getWorksByPageControl(
+            @RequestParam("status") WorkStatusEnum statusEnum,
+            @RequestBody PageRequestDto pageRequestDto
+    ) {
+        return workService.getWorkByPageService(statusEnum, pageRequestDto);
     }
     /**根据层级分类id获取所有符合条件的work实体
      * @param categoryId 层级分类id

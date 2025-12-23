@@ -1,0 +1,57 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.miaoyu.barc.api.work.mapper.WorkMapper">
+    <!-- 条件筛选片段SQL -->
+    <sql id="whereConditions">
+        <where>
+            <!-- 必要筛选作品状态 -->
+            w.status = #{status}
+            <!-- 确保condition存在 -->
+            <if test="condition != null">
+                <!-- 筛选keyword -->
+                <if test="condition.keyword != null and condition.keyword != ''">
+                    AND (
+                        w.title LIKE CONCAT('%', #{condition.keyword}, '%')
+                        OR w.description LIKE CONCAT('%', #{condition.keyword}, '%')
+                    )
+                </if>
+                <!-- 筛选学生名 -->
+                <if test="condition.student != null and condition.student != ''">
+                    AND w.student IN (
+                        <!-- 子查询联表 -->
+                        SELECT s.id FROM student s
+                        WHERE s.cn_name LIKE CONCAT('%', #{condition.student}, '%')
+                        OR s.jp_name LIKE CONCAT('%', #{condition.student}, '%')
+                        OR s.kr_name LIKE CONCAT('%', #{condition.student}, '%')
+                        OR s.en_name LIKE CONCAT('%', #{condition.student}, '%')
+                    )
+                </if>
+            </if>
+        </where>
+    </sql>
+    <!-- 按条件筛选内容 -->
+    <select id="selectByPage" resultType="com.miaoyu.barc.api.work.model.WorkModel">
+        SELECT
+            w.id,
+            w.title,
+            w.description,
+            w.cover_image,
+            w.author,
+            w.author_nickname,
+            w.uploader,
+            w.is_claim,
+            w.status,
+            w.student,
+            w.updated_at
+        FROM work w
+        <include refid="whereConditions"/>
+        ORDER BY w.updated_at DESC
+        LIMIT #{offset}, #{page_size}
+    </select>
+    <!-- 按条件查出总数 -->
+    <select id="countByPage" resultType="long">
+        SELECT COUNT(*)
+        FROM work w
+        <include refid="whereConditions"/>
+    </select>
+</mapper>

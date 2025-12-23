@@ -23,7 +23,10 @@ import com.miaoyu.barc.user.mapper.UserArchiveMapper;
 import com.miaoyu.barc.user.model.UserArchiveModel;
 import com.miaoyu.barc.utils.GenerateUUID;
 import com.miaoyu.barc.utils.J;
+import com.miaoyu.barc.utils.dto.PageRequestDto;
+import com.miaoyu.barc.utils.dto.PageResultDto;
 import com.miaoyu.barc.utils.minio.MinioObjects;
+import com.miaoyu.barc.utils.pojo.PageInitPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -64,6 +67,28 @@ public class WorkService {
 
     public ResponseEntity<J> getWorksAllService(WorkStatusEnum statusEnum) {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectAll(statusEnum)));
+    }
+
+    public ResponseEntity<J> getWorkByPageService(WorkStatusEnum statusEnum, PageRequestDto dto) {
+        PageInitPojo pageInit = new PageInitPojo(dto);
+        Integer pageNum = pageInit.getPageNum();
+        Integer pageSize = pageInit.getPageSize();
+        Integer offset = pageInit.getOffset(); // 偏移量
+        List<WorkModel> models = workMapper.selectByPage(statusEnum, offset, pageSize, dto.getParams());
+        Long total = workMapper.countByPage(statusEnum, dto.getParams());
+        int totalPage = (int) Math.ceil((double) total / pageSize);
+        return ResponseEntity.ok(
+                new ResourceR().resourceSuch(
+                        true,
+                        new PageResultDto<>(
+                                total,
+                                models,
+                                pageNum,
+                                pageSize,
+                                totalPage == 0 ? 1 : totalPage
+                        )
+                )
+        );
     }
 
     public ResponseEntity<J> getWorksByCategoryService(String categoryId, WorkStatusEnum statusEnum) {
