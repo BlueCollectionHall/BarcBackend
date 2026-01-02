@@ -26,6 +26,22 @@
                         OR s.en_name LIKE CONCAT('%', #{condition.student}, '%')
                     )
                 </if>
+                <!-- 筛选学园名 -->
+                <if test="condition.school != null and condition.school != ''">
+                    AND w.student IN (
+                        SELECT s.id FROM student s
+                        INNER JOIN school sc ON s.school = sc.id
+                        WHERE sc.cn_name LIKE CONCAT ('%', #{condition.school}, '%')
+                    )
+                </if>
+                <!-- 筛选部团名 -->
+                <if test="condition.club != null and condition.club != ''">
+                    AND w.student IN (
+                        SELECT s.id FROM student s
+                        INNER JOIN club c ON s.club = c.id
+                        WHERE c.cn_name LIKE CONCAT('%', #{condition.club}, '%')
+                    )
+                </if>
             </if>
         </where>
     </sql>
