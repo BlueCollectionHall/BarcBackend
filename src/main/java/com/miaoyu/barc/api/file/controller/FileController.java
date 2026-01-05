@@ -23,7 +23,7 @@ public class FileController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("path") String path
         ) {
-        return fileService.uploadFileService(request.getAttribute("uuid").toString(), file, path);
+        return fileService.uploadFileService(request.getAttribute("uuid").toString(), file, path, null);
     }
     @PostMapping("/delete")
     public ResponseEntity<J> deleteFileControl(

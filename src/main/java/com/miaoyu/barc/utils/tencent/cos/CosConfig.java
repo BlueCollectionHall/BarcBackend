@@ -1,6 +1,8 @@
 package com.miaoyu.barc.utils.tencent.cos;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,4 +25,17 @@ public class CosConfig {
     private String baseUrl;
     private String imagePrefix;
     private String tempPrefix;
+    private String customDomain;
+    private CosBucketPojo avatar;
+    private CosBucketPojo test;
+    @Setter
+    @Getter
+    public static class CosBucketPojo {
+        private String bucketName;
+        private String bucketRegion;
+        private String baseUrl;
+        private String customDomain;
+    }
 }
+
+
