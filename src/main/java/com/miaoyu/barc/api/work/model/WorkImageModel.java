@@ -11,7 +11,6 @@ public class WorkImageModel {
     private String id;
     private String work_id;
     private Integer sort;
-    private String image_name;
-    private String image_url;
+    private String object_key;
     private LocalDateTime created_at;
 }

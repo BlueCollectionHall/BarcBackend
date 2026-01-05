@@ -28,6 +28,7 @@ public class CosConfig {
     private String customDomain;
     private CosBucketPojo avatar;
     private CosBucketPojo test;
+    private CosBucketPojo image;
     @Setter
     @Getter
     public static class CosBucketPojo {

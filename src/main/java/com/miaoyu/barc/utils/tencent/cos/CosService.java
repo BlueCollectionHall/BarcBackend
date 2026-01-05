@@ -36,7 +36,7 @@ public class CosService {
      * 上传文件到COS
      * @param file 文件
      * @param key 文件完整路径（*** 不包括文件本身 ***）
-     * @return 文件信息
+     * @return 文件完整路径（包含文件本身）
      */
     public J uploadFile (MultipartFile file, String key, CosBucketConfigEnum clientName) {
         // 文件原始名
@@ -63,8 +63,8 @@ public class CosService {
             cosClient.cosClient(clientName).putObject(putObjectRequest);
             // 构建返回路径 （返回一个签名URL）
 //            String url = cosConfig.getBaseUrl() + uniqueKeyFilename;
-            String url = this.generateSignedUrl(uniqueKeyFilename, new Date(System.currentTimeMillis() + 60 * 1000), null);
-            return new J(0, "文件上传成功", url);
+//            String url = this.generateSignedUrl(uniqueKeyFilename, new Date(System.currentTimeMillis() + 60 * 1000), null);
+            return new J(0, "文件上传成功", uniqueKeyFilename);
         } catch (IOException e) {
             log.error("文件上传失败", e);
             throw new RuntimeException("文件上传失败");

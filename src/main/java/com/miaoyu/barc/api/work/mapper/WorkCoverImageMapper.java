@@ -13,7 +13,7 @@ public interface WorkCoverImageMapper {
     @Select("SELECT * FROM work_cover_image WHERE id = #{id}")
     WorkCoverImageModel selectById(@Param("id") String id);
 
-    @Insert("INSERT INTO work_cover_image (id, work_id, image_url, image_name) VALUES (#{id}, #{work_id}, #{image_url}, #{image_name})")
+    @Insert("INSERT INTO work_cover_image (id, work_id, object_key) VALUES (#{id}, #{work_id}, #{object_key})")
     boolean insert(WorkCoverImageModel workCoverImageModel);
 
     @Delete("DELETE FROM work_cover_image WHERE work_id = #{work_id}")

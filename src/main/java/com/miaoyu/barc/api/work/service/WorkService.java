@@ -12,7 +12,6 @@ import com.miaoyu.barc.api.work.model.WorkCoverImageModel;
 import com.miaoyu.barc.api.work.model.WorkImageModel;
 import com.miaoyu.barc.api.work.model.WorkModel;
 import com.miaoyu.barc.api.work.model.entity.WorkEntity;
-import com.miaoyu.barc.permission.ComparePermission;
 import com.miaoyu.barc.permission.PermissionConst;
 import com.miaoyu.barc.response.ChangeR;
 import com.miaoyu.barc.response.ErrorR;
@@ -20,22 +19,28 @@ import com.miaoyu.barc.response.ResourceR;
 import com.miaoyu.barc.response.UserR;
 import com.miaoyu.barc.user.enumeration.UserIdentityEnum;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
-import com.miaoyu.barc.user.model.UserArchiveModel;
 import com.miaoyu.barc.utils.GenerateUUID;
 import com.miaoyu.barc.utils.J;
 import com.miaoyu.barc.utils.dto.PageRequestDto;
 import com.miaoyu.barc.utils.dto.PageResultDto;
 import com.miaoyu.barc.utils.minio.MinioObjects;
 import com.miaoyu.barc.utils.pojo.PageInitPojo;
+import com.miaoyu.barc.utils.tencent.cos.CosBucketConfigEnum;
+import com.miaoyu.barc.utils.tencent.cos.CosService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class WorkService {
     @Autowired
@@ -50,6 +55,8 @@ public class WorkService {
     private WorkImageMapper workImageMapper;
     @Autowired
     private WorkCoverImageMapper workCoverImageMapper;
+    @Autowired
+    private CosService cosService;
 
     public ResponseEntity<J> getNewWorkService(int day, boolean isStudentList) {
         List<WorkEntity> works = workMapper.selectByDay(day, WorkStatusEnum.PUBLIC);
@@ -77,6 +84,14 @@ public class WorkService {
         List<WorkModel> models = workMapper.selectByPage(statusEnum, offset, pageSize, dto.getParams());
         Long total = workMapper.countByPage(statusEnum, dto.getParams());
         int totalPage = (int) Math.ceil((double) total / pageSize);
+        // 循环所有作品获取封面图并签名
+        for (WorkModel model : models) {
+            WorkCoverImageModel coverImageModel = workCoverImageMapper.selectByWorkId(model.getId());
+            if (coverImageModel != null) {
+                String coverImageUrl = cosService.generateSignedUrl(coverImageModel.getObject_key(), new Date(System.currentTimeMillis() + 60 * 1000), CosBucketConfigEnum.image);
+                model.setCover_image(coverImageUrl);
+            }
+        }
         return ResponseEntity.ok(
                 new ResourceR().resourceSuch(
                         true,
@@ -166,38 +181,52 @@ public class WorkService {
         requestModel.setCover_image("");
         boolean insert = workMapper.insert(requestModel);
         if (insert) {
-            try {
-                // 写入封面图
-                String coverImageName = requestModel.getId() + "_" + coverImage.getName();
-                WorkCoverImageModel coverImageModel = new WorkCoverImageModel();
-                coverImageModel.setId(new GenerateUUID().getUuid36l());
-                coverImageModel.setWork_id(requestModel.getId());
-                coverImageModel.setImage_name(coverImageName);
-                String coverImageUrl = minioObjects.putObject("barctemp", "uploads/cover_" + coverImageName, coverImage);
-                if (coverImageUrl == null) return ResponseEntity.ok(new ErrorR().normal("封面图上传失败！"));
-                coverImageModel.setImage_url(coverImageUrl);
-                requestModel.setCover_image(coverImageUrl);
-                requestModel.setBanner_image(coverImageUrl);
-                workMapper.update(requestModel);
-                workCoverImageMapper.insert(coverImageModel);
-                // 写入其他图片
-                for (int i = 0; i < files.length; i++) {
-                    MultipartFile file = files[i];
-                    String finalFileName = requestModel.getId() + "_" + file.getOriginalFilename();
-                    WorkImageModel workImage = new WorkImageModel();
-                    workImage.setId(new GenerateUUID().getUuid36l());
-                    workImage.setSort(i);
-                    workImage.setWork_id(requestModel.getId());
-                    workImage.setImage_name(finalFileName);
-                    String imageUrl = minioObjects.putObject("barctemp", "uploads/" + finalFileName, file);
-                    if (imageUrl == null) continue;
-                    workImage.setImage_url(imageUrl);
-                    workImageMapper.insert(workImage);
-                }
-                return ResponseEntity.ok(new ChangeR().udu(true, 1));
-            } catch (Exception e) {
-                return ResponseEntity.ok(new ChangeR().udu(false, 1));
+            /*接入腾讯云COS对象存储的操作方法*/
+            // 设置桶内Key路径
+            final String KEY =  "/" + uuid + "/work_images/";
+            // 向腾讯云COS存储对象
+            J reJ = cosService.uploadFile(coverImage, KEY, CosBucketConfigEnum.image);
+            // 若是向腾讯云COS存储失败时
+            if (reJ == null || reJ.getCode() != 0) {
+                // 删除掉已经上传的作品信息
+                workMapper.delete(requestModel.getId());
+                return ResponseEntity.ok(new ErrorR().normal("上传封面图时出现异常：From Server!"));
             }
+            String coverKey = reJ.getData().toString();
+            WorkCoverImageModel coverImageModel = new WorkCoverImageModel();
+            coverImageModel.setId(new GenerateUUID().getUuid36l());
+            coverImageModel.setWork_id(requestModel.getId());
+            coverImageModel.setObject_key(coverKey);
+            try {
+                workCoverImageMapper.insert(coverImageModel);
+            } catch (Exception e) {
+                // 删除掉已经上传的作品信息
+                workMapper.delete(requestModel.getId());
+                // 删除腾讯云COS中记录的对象信息
+                cosService.deleteFile(coverKey, CosBucketConfigEnum.image);
+                return ResponseEntity.ok(new ErrorR().normal("记录封面图指针时出现异常：From Server!"));
+            }
+            // 循环上传作品内容图
+            int count = 0;
+            for (MultipartFile file : files) {
+                J ReImgJ = cosService.uploadFile(file, KEY, CosBucketConfigEnum.image);
+                if (ReImgJ == null || ReImgJ.getCode() != 0) {
+                    return ResponseEntity.ok(new ErrorR().normal("上传作品图时出现异常：From Server!"));
+                }
+                String imageKey = ReImgJ.getData().toString();
+                WorkImageModel imageModel = new WorkImageModel();
+                imageModel.setId(new GenerateUUID().getUuid36l());
+                imageModel.setWork_id(requestModel.getId());
+                imageModel.setSort(count);
+                imageModel.setObject_key(imageKey);
+                try {
+                    workImageMapper.insert(imageModel);
+                } catch (Exception e) {
+                    return ResponseEntity.ok(new ErrorR().normal("记录作品图指针时出现异常：From Server!"));
+                }
+                count++;
+            }
+            return ResponseEntity.ok(new ChangeR().udu(true, 1));
         }
         return ResponseEntity.ok(new ChangeR().udu(false, 1));
     }
@@ -211,18 +240,22 @@ public class WorkService {
     }
 
     public ResponseEntity<J> deleteWorkService(String workId) {
-        List<WorkImageModel> workImages = workImageMapper.selectByWorkId(workId);
-        for (WorkImageModel workImage : workImages) {
-            minioObjects.deleteObject("barctemp", "uploads/" + workImage.getImage_name());
-            workImageMapper.delete(workImage.getId());
+        try {
+            // 取出所有作品图指针逐一删除
+            List<WorkImageModel> workImages = workImageMapper.selectByWorkId(workId);
+            for (WorkImageModel workImage : workImages) {
+                cosService.deleteFile(workImage.getObject_key(), CosBucketConfigEnum.image);
+                workImageMapper.delete(workImage.getId());
+            }
+            // 取出封面图指针执行删除
+            WorkCoverImageModel coverImage = workCoverImageMapper.selectByWorkId(workId);
+            cosService.deleteFile(coverImage.getObject_key(), CosBucketConfigEnum.image);
+            workCoverImageMapper.deleteByWorkId(workId);
+            // 删除作品
+            workMapper.delete(workId);
+        } catch (Exception e) {
+            return ResponseEntity.ok(new ChangeR().udu(false, 2));
         }
-        WorkCoverImageModel coverImage = workCoverImageMapper.selectByWorkId(workId);
-        minioObjects.deleteObject("barctemp", "uploads/cover_" + coverImage.getImage_name());
-        workCoverImageMapper.deleteByWorkId(workId);
-        boolean delete = workMapper.delete(workId);
-        if (delete) {
-            return ResponseEntity.ok(new ChangeR().udu(true, 2));
-        }
-        return ResponseEntity.ok(new ChangeR().udu(false, 2));
+        return ResponseEntity.ok(new ChangeR().udu(true, 2));
     }
 }

@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 public class WorkCoverImageModel {
     private String id;
     private String work_id;
-    private String image_name;
-    private String image_url;
+    private String object_key;
     private LocalDateTime created_at;
 }
