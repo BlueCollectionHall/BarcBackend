@@ -28,6 +28,7 @@ import com.miaoyu.barc.utils.pojo.PageInitPojo;
 import com.miaoyu.barc.utils.tencent.cos.CosBucketConfigEnum;
 import com.miaoyu.barc.utils.tencent.cos.CosService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -139,7 +140,13 @@ public class WorkService {
             case PRIVATE -> ResponseEntity.ok(new ErrorR().normal("私有作品无法访问"));
             case BAN -> ResponseEntity.ok(new ErrorR().normal("作品已被封禁"));
             case OFF -> ResponseEntity.ok(new ErrorR().normal("作品已被下架"));
-            default -> ResponseEntity.ok(new ResourceR().resourceSuch(true, work));
+            default -> {
+                // 预签名work封面图URL
+                WorkCoverImageModel coverImageModel = workCoverImageMapper.selectByWorkId(workId);
+                String signedCoverImageUrl = cosService.generateSignedUrl(coverImageModel.getObject_key(), new Date(System.currentTimeMillis() + 60 * 1000), CosBucketConfigEnum.image);
+                work.setCover_image(signedCoverImageUrl);
+                yield ResponseEntity.ok(new ResourceR().resourceSuch(true, work));
+            }
         };
     }
     public ResponseEntity<J> getWorkByIdWithMeService(String uuid, String workId) {

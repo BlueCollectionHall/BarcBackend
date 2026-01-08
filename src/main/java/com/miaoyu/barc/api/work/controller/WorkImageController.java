@@ -1,5 +1,6 @@
 package com.miaoyu.barc.api.work.controller;
 
+import com.miaoyu.barc.annotation.IgnoreAuth;
 import com.miaoyu.barc.api.work.mapper.WorkImageMapper;
 import com.miaoyu.barc.api.work.mapper.WorkMapper;
 import com.miaoyu.barc.api.work.model.WorkImageModel;
@@ -23,6 +24,11 @@ public class WorkImageController {
     @Autowired
     private WorkMapper workMapper;
 
+    @GetMapping("/images_by_work")
+    @IgnoreAuth
+    public ResponseEntity<J> getImagesByWorkControl(@RequestParam("work_id") String workId) {
+        return workImageService.getImagesByWorkService(workId);
+    }
     @PostMapping("/upload")
     public ResponseEntity<J> uploadWorkImageControl(
             HttpServletRequest request,
