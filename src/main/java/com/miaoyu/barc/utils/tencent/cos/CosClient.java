@@ -31,7 +31,7 @@ public class CosClient {
                 cosConfig.getSecretId(),
                 cosConfig.getSecretKey()
         );
-        log.info("Cos客户端得到clientName：{}", clientName);
+//        log.info("Cos客户端得到clientName：{}", clientName);
         // 如果客户端名是空值
         if (clientName == null) {
             log.info("clientName被判空");
