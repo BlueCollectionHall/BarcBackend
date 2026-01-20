@@ -1,6 +1,5 @@
 package com.miaoyu.barc.api.work.service;
 
-import com.miaoyu.barc.annotation.RequireSelfOrPermissionAnno;
 import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.api.work.mapper.WorkClaimMapper;
 import com.miaoyu.barc.api.work.mapper.WorkMapper;
@@ -16,14 +15,14 @@ import com.miaoyu.barc.user.enumeration.UserIdentityEnum;
 import com.miaoyu.barc.user.mapper.UserArchiveMapper;
 import com.miaoyu.barc.user.mapper.UserBasicMapper;
 import com.miaoyu.barc.user.model.UserArchiveModel;
+import com.miaoyu.barc.utils.GenerateUUID;
 import com.miaoyu.barc.utils.J;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-
+@Slf4j
 @Service
 public class WorkClaimService {
     @Autowired
@@ -79,10 +78,27 @@ public class WorkClaimService {
         work.setAuthor(workClaim.getApplicant_uuid());
         try {
             workMapper.update(work);
-            workClaimMapper.delectByWorkId(workClaim.getWork_id());
+            workClaimMapper.deleteByWorkId(workClaim.getWork_id());
         } catch (Exception e) {
             return ResponseEntity.ok(new ChangeR().udu(false, 3));
         }
         return ResponseEntity.ok(new ChangeR().udu(true, 3));
+    }
+
+    @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
+    public ResponseEntity<J> uploadWorkClaimService(String uuid, WorkClaimModel model) {
+        if (model.getWork_id() != null && !model.getWork_id().isEmpty()) {
+            model.setApplicant_uuid(uuid);
+            model.setId(new GenerateUUID().getUuid36l());
+            try {
+                workClaimMapper.insert(model);
+                return ResponseEntity.ok(new ChangeR().udu(true, 1));
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                return ResponseEntity.ok(new ChangeR().udu(false, 1));
+            }
+        } else {
+            return ResponseEntity.ok(new ChangeR().udu(false, 1));
+        }
     }
 }

@@ -23,8 +23,8 @@ public interface WorkClaimMapper {
     WorkClaimModel selectById(@Param("id") String id);
     @Insert("INSERT INTO work_claim (id, work_id, applicant_uuid) VALUES (#{id}, #{work_id}, #{applicant_uuid})")
     boolean insert(WorkClaimModel workClaimModel);
-    @Delete("DELECT FROM work_claim WHERE id = #{id}")
-    boolean delectById(@Param("id") String id);
-    @Delete("DELECT FROM work_claim WHERE work_id = #{work_id}")
-    boolean delectByWorkId(@Param("work_id") String workId);
+    @Delete("DELETE FROM work_claim WHERE id = #{id}")
+    boolean deleteById(@Param("id") String id);
+    @Delete("DELETE FROM work_claim WHERE work_id = #{work_id}")
+    boolean deleteByWorkId(@Param("work_id") String workId);
 }

@@ -2,6 +2,7 @@ package com.miaoyu.barc.api.work.controller;
 
 import com.miaoyu.barc.annotation.ApiPath;
 import com.miaoyu.barc.annotation.SuchWorkClaimAnno;
+import com.miaoyu.barc.api.work.model.WorkClaimModel;
 import com.miaoyu.barc.api.work.service.WorkClaimService;
 import com.miaoyu.barc.utils.J;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,5 +31,13 @@ public class WorkClaimController {
     @SuchWorkClaimAnno(index = 1)
     public ResponseEntity<J> checkWorkClaimControl(HttpServletRequest request, @RequestParam("work_claim_id") String workClaimId) {
         return workClaimService.checkWorkClaimService(request.getAttribute("uuid").toString(), workClaimId);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<J> uploadWorkClaimControl(
+            HttpServletRequest request,
+            @RequestBody WorkClaimModel model
+    ) {
+        return workClaimService.uploadWorkClaimService(request.getAttribute("uuid").toString(), model);
     }
 }
