@@ -31,6 +31,9 @@ public class NoticeService {
 
     public ResponseEntity<J> latestNoticeService(Integer day) {
         NoticeModel latest = noticeMapper.latest(day);
+        if (latest == null) {
+            return ResponseEntity.ok(new ResourceR().resourceSuch(true, new ArrayList<>()));
+        }
         List<NoticeModel> list = new ArrayList<>();
         list.add(latest);
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, list));
