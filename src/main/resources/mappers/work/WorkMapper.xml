@@ -65,6 +65,30 @@
                         WHERE #{condition.club_id} = c.id
                     )
                 </if>
+                <!-- （创作者本人）筛选用户名username符合的情况 -->
+                <if test="condition.author_username != null and condition.author_username != ''">
+                    AND w.author IN (
+                        SELECT ub.uuid FROM user_basic ub
+                        WHERE ub.username = #{condition.author_username}
+                        AND w.author = ub.uuid
+                    )
+                </if>
+                <!-- （创作者本人）筛选唯一检索id符合的情况 -->
+                <if test="condition.author_uuid != null and condition.author_uuid != ''">
+                    AND w.author = #{condition.author_uuid}
+                </if>
+                <!-- （收录者）筛选用户名username符合的情况 -->
+                <if test="condition.uploader_username != null and condition.uploader_username != ''">
+                    AND w.uploader IN (
+                        SELECT ub.uuid FROM user_basic ub
+                        WHERE ub.username = #{condition.uploader_username}
+                        AND w.uploader = ub.uuid
+                    )
+                </if>
+                <!-- （收录者）筛选唯一检索ID符合的情况 -->
+                <if test="condition.uploader_uuid != null and condition.uploader_uuid != ''">
+                    AND w.uploader = #{condition.uploader_uuid}
+                </if>
             </if>
         </where>
     </sql>
