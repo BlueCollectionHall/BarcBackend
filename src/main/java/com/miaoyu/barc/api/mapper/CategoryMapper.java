@@ -8,4 +8,7 @@ import java.util.List;
 public interface CategoryMapper {
     @Select("SELECT * FROM category")
     List<CategoryPojo> selectAll();
+
+    @Select("SELECT c.id, c.name, c.sort, c.icon FROM category c WHERE level = 1")
+    List<CategoryPojo> selectAllTop();
 }

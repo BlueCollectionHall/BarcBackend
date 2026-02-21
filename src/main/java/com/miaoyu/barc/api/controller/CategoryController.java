@@ -25,6 +25,17 @@ public class CategoryController {
         return categoryService.getCategoriesService(true, null);
     }
 
+    /**
+     * 获取全部顶级分类
+     * 20260222.0150.Ver0.1.11（在当前版本中暂时不需要次级分类，因此该接口相对适用）
+     * @return List类型中返回所有顶级分类信息
+     * */
+    @IgnoreAuth
+    @GetMapping("/all_top_categories")
+    public ResponseEntity<J> getAllTopCategoriesControl() {
+        return categoryService.getAllTopCategoriesService();
+    }
+
     /**获取全部分类不分级
      * @return List类型中包含全部分类但不分级*/
     @IgnoreAuth

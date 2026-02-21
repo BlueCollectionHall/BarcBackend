@@ -48,6 +48,12 @@ public class CategoryService {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, rootCategories));
     }
 
+    public ResponseEntity<J> getAllTopCategoriesService() {
+        List<CategoryPojo> allTopCategories = categoryMapper.selectAllTop();
+        sortCategories(allTopCategories);
+        return ResponseEntity.ok(new ResourceR().resourceSuch(true, allTopCategories));
+    }
+
     public ResponseEntity<J> getCategoriesAllNotGradedService() {
         return ResponseEntity.ok(new ResourceR().resourceSuch(true, categoryMapper.selectAll()));
     }
