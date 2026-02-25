@@ -158,13 +158,14 @@ public class WorkController {
     public ResponseEntity<J> uploadWorkControl(
             HttpServletRequest request,
             @RequestParam("form") String formJson,
+            @RequestParam(value = "category_id", required = false) String categoryId,
             @RequestPart("cover_image") MultipartFile coverImage,
             @RequestPart(value = "files", required = false) MultipartFile[] files
             ) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         WorkModel requestModel = objectMapper.readValue(formJson, WorkModel.class);
         if (files == null || files.length == 0) files = new MultipartFile[0];
-        return workService.uploadWorkService(request.getAttribute("uuid").toString(), requestModel, coverImage, files);
+        return workService.uploadWorkService(request.getAttribute("uuid").toString(), categoryId, requestModel, coverImage, files);
     }
     /**修改作品（兼容维护者及以上维护性修改）
      * @param requestModel 作品的实体

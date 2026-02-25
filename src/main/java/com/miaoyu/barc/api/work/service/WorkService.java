@@ -5,9 +5,11 @@ import com.miaoyu.barc.annotation.RequireUserAndPermissionAnno;
 import com.miaoyu.barc.api.mapper.StudentMapper;
 import com.miaoyu.barc.api.model.StudentModel;
 import com.miaoyu.barc.api.work.enumeration.WorkStatusEnum;
+import com.miaoyu.barc.api.work.mapper.WorkCategoryMapper;
 import com.miaoyu.barc.api.work.mapper.WorkCoverImageMapper;
 import com.miaoyu.barc.api.work.mapper.WorkImageMapper;
 import com.miaoyu.barc.api.work.mapper.WorkMapper;
+import com.miaoyu.barc.api.work.model.WorkCategoryModel;
 import com.miaoyu.barc.api.work.model.WorkCoverImageModel;
 import com.miaoyu.barc.api.work.model.WorkImageModel;
 import com.miaoyu.barc.api.work.model.WorkModel;
@@ -58,6 +60,8 @@ public class WorkService {
     private WorkCoverImageMapper workCoverImageMapper;
     @Autowired
     private CosService cosService;
+    @Autowired
+    private WorkCategoryMapper workCategoryMapper;
 
     public ResponseEntity<J> getNewWorkService(int day, boolean isStudentList) {
         List<WorkEntity> works = workMapper.selectByDay(day, WorkStatusEnum.PUBLIC);
@@ -175,7 +179,7 @@ public class WorkService {
     }
     @Transactional
     @RequireUserAndPermissionAnno({@RequireUserAndPermissionAnno.Check()})
-    public ResponseEntity<J> uploadWorkService(String uuid, WorkModel requestModel, MultipartFile coverImage, MultipartFile[] files) {
+    public ResponseEntity<J> uploadWorkService(String uuid, String categoryId, WorkModel requestModel, MultipartFile coverImage, MultipartFile[] files) {
         WorkModel tempWork;
         // 不存在ID，需要自动生成ID
         if (requestModel.getId() == null || requestModel.getId().isEmpty()) {
@@ -202,6 +206,18 @@ public class WorkService {
         requestModel.setCover_image("");
         boolean insert = workMapper.insert(requestModel);
         if (insert) {
+            /*若分类参数存在时的判断*/
+            if (categoryId != null) {
+                WorkCategoryModel workCategory = new WorkCategoryModel();
+                workCategory.setId(new GenerateUUID().getUuid36l());
+                workCategory.setCategory_id(categoryId);
+                workCategory.setWork_id(requestModel.getId());
+                try {
+                    workCategoryMapper.insert(workCategory);
+                } catch (Exception e) {
+                    log.error("作品分类写入失败！The category of work => Insert Error! 作品ID：{}", requestModel.getId());
+                }
+            }
             /*接入腾讯云COS对象存储的操作方法*/
             // 设置桶内Key路径
             final String KEY =  "/" + uuid + "/work_images/";
