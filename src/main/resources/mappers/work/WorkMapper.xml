@@ -117,4 +117,79 @@
         FROM work w
         <include refid="whereConditions"/>
     </select>
+    <!-- 分类以及分页条件筛选片段SQL -->
+    <sql id="whereConditionOnCategory">
+        JOIN work_category wc
+        ON w.id = wc.work_id
+        <where>
+            wc.category_id = #{category_id}
+            <!-- 必要筛选作品状态 -->
+            AND w.status = #{status}
+            <if test="condition.keyword != null and condition.keyword != ''">
+                AND (
+                    <!-- 筛选keyword -->
+                    w.title LIKE CONCAT('%', #{condition.keyword}, '%')
+                    OR w.description LIKE CONCAT('%', #{condition.keyword}, '%')
+                    <!-- 筛选学生名 -->
+                    OR w.student IN (
+                        <!-- 子查询联表 -->
+                        SELECT s.id FROM student s
+                        WHERE s.cn_name LIKE CONCAT('%', #{condition.keyword}, '%')
+                        OR s.jp_name LIKE CONCAT('%', #{condition.keyword}, '%')
+                        OR s.kr_name LIKE CONCAT('%', #{condition.keyword}, '%')
+                        OR s.en_name LIKE CONCAT('%', #{condition.keyword}, '%')
+                    )
+                    <!-- 筛选学园名 -->
+                    OR w.student IN (
+                        SELECT s.id FROM student s
+                        INNER JOIN school sc ON s.school = sc.id
+                        WHERE sc.cn_name LIKE CONCAT ('%', #{condition.keyword}, '%')
+                    )
+                    <!-- 筛选部团名 -->
+                    OR w.student IN (
+                        SELECT s.id FROM student s
+                        INNER JOIN club c ON s.club = c.id
+                        WHERE c.cn_name LIKE CONCAT('%', #{condition.keyword}, '%')
+                    )
+                    <!-- 筛选作者昵称 或者 收录者昵称 或者 三方作者昵称 -->
+                    OR w.author IN (
+                        SELECT ua.uuid FROM user_archive ua
+                        WHERE ua.nickname = #{condition.keyword}
+                        AND w.author = ua.uuid
+                    )
+                    OR w.author_nickname LIKE CONCAT('%', #{condition.keyword}, '%')
+                    OR w.uploader IN (
+                        SELECT ua.uuid FROM user_archive ua
+                        WHERE ua.nickname = #{condition.keyword}
+                        AND w.uploader = ua.uuid
+                    )
+                )
+            </if>
+        </where>
+    </sql>
+    <!-- 按照分类以及分页和条件筛选内容 -->
+    <select id="selectByPageOnCategory" resultType="com.miaoyu.barc.api.work.model.WorkModel">
+        SELECT
+        w.id,
+        w.title,
+        w.description,
+        w.cover_image,
+        w.author,
+        w.author_nickname,
+        w.uploader,
+        w.is_claim,
+        w.status,
+        w.student,
+        w.updated_at
+        FROM work w
+        <include refid="whereConditionOnCategory"/>
+        ORDER BY w.updated_at DESC
+        LIMIT #{offset}, #{page_size}
+    </select>
+    <!-- 按照分类以及分页和条件查出总数 -->
+    <select id="countByPageOnCategory" resultType="long">
+        SELECT COUNT(*)
+        FROM work w
+        <include refid="whereConditionOnCategory"/>
+    </select>
 </mapper>

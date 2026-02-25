@@ -86,19 +86,13 @@ public class WorkService {
         Long total = workMapper.countByPage(statusEnum, dto.getParams());
         int totalPage = (int) Math.ceil((double) total / pageSize);
         // 循环所有作品获取封面图并签名
-        for (WorkModel model : models) {
-            WorkCoverImageModel coverImageModel = workCoverImageMapper.selectByWorkId(model.getId());
-            if (coverImageModel != null) {
-                String coverImageUrl = cosService.generateSignedUrl(coverImageModel.getObject_key(), new Date(System.currentTimeMillis() + 60 * 1000), CosBucketConfigEnum.image);
-                model.setCover_image(coverImageUrl);
-            }
-        }
+        List<WorkModel> signatureWorks = this.loopSignatureWorkCover(models);
         return ResponseEntity.ok(
                 new ResourceR().resourceSuch(
                         true,
                         new PageResultDto<>(
                                 total,
-                                models,
+                                signatureWorks,
                                 pageNum,
                                 pageSize,
                                 totalPage == 0 ? 1 : totalPage
@@ -107,8 +101,28 @@ public class WorkService {
         );
     }
 
-    public ResponseEntity<J> getWorksByCategoryService(String categoryId, WorkStatusEnum statusEnum) {
-        return ResponseEntity.ok(new ResourceR().resourceSuch(true, workMapper.selectByCategoryId(categoryId, statusEnum)));
+    public ResponseEntity<J> getWorksByCategoryService(String categoryId, WorkStatusEnum statusEnum, PageRequestDto dto) {
+        PageInitPojo pageInit = new PageInitPojo(dto); // 初始化接收的分页dto参数
+        Integer pageNum = pageInit.getPageNum(); // 页码
+        Integer pageSize = pageInit.getPageSize(); // 本页实体数
+        Integer offset = pageInit.getOffset(); // 偏移量
+        List<WorkModel> works = workMapper.selectByPageOnCategory(categoryId, statusEnum, offset, pageSize, dto.getParams());
+        Long total = workMapper.countByPageOnCategory(categoryId, statusEnum, dto.getParams());
+        int totalPage = (int) Math.ceil((double) total / pageSize);
+        // 循环所有作品获取封面图并签名
+        List<WorkModel> signatureWorks = this.loopSignatureWorkCover(works);
+        return ResponseEntity.ok(
+                new ResourceR().resourceSuch(
+                        true,
+                        new PageResultDto<>(
+                                total,
+                                signatureWorks,
+                                pageNum,
+                                pageSize,
+                                totalPage == 0 ? 1 : totalPage
+                        )
+                )
+        );
     }
 
     public ResponseEntity<J> getWorksBySchoolService(String schoolId, WorkStatusEnum statusEnum) {
@@ -264,5 +278,17 @@ public class WorkService {
             return ResponseEntity.ok(new ChangeR().udu(false, 2));
         }
         return ResponseEntity.ok(new ChangeR().udu(true, 2));
+    }
+
+    private List<WorkModel> loopSignatureWorkCover(List<WorkModel> works) {
+        // 循环所有作品获取封面图并签名
+        for (WorkModel model : works) {
+            WorkCoverImageModel coverImageModel = workCoverImageMapper.selectByWorkId(model.getId());
+            if (coverImageModel != null) {
+                String coverImageUrl = cosService.generateSignedUrl(coverImageModel.getObject_key(), new Date(System.currentTimeMillis() + 60 * 1000), CosBucketConfigEnum.image);
+                model.setCover_image(coverImageUrl);
+            }
+        }
+        return works;
     }
 }

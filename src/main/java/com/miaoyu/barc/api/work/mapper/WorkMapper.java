@@ -26,6 +26,18 @@ public interface WorkMapper {
             @Param("status") WorkStatusEnum statusEnum,
             @Param("condition") Map<String, Object> condition);
 
+    List<WorkModel> selectByPageOnCategory(
+            @Param("category_id") String categoryId,
+            @Param("status") WorkStatusEnum statusEnum,
+            @Param("offset") Integer offset,
+            @Param("page_size") Integer pageSize,
+            @Param("condition") Map<String, Object> condition);
+
+    Long countByPageOnCategory(
+            @Param("category_id") String categoryId,
+            @Param("status") WorkStatusEnum statusEnum,
+            @Param("condition") Map<String, Object> condition);
+
     @Select("SELECT w.* FROM work w JOIN student stu ON w.student = stu.id WHERE stu.school = #{school_id} AND status = #{status}")
     List<WorkEntity> selectBySchoolId(@Param("school_id") String schoolId, @Param("status") WorkStatusEnum statusEnum);
 

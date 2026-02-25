@@ -60,12 +60,13 @@ public class WorkController {
      * @param categoryId 层级分类id
      * @return List类型中包含所有work实体*/
     @IgnoreAuth
-    @GetMapping("/works_by_category")
+    @PostMapping("/works_by_category")
     public ResponseEntity<J> getWorksByCategoryControl(
             @RequestParam("status") WorkStatusEnum statusEnum,
-            @RequestParam("category_id") String categoryId
+            @RequestParam("category_id") String categoryId,
+            @RequestBody PageRequestDto pageRequestDto
     ) {
-        return workService.getWorksByCategoryService(categoryId, statusEnum);
+        return workService.getWorksByCategoryService(categoryId, statusEnum, pageRequestDto);
     }
     /**根据school_id获取所有符合条件的work实体
      * @param schoolId school_id
